@@ -12,6 +12,14 @@ npm run build              # production build into _site/
 npm run nueva-competencia  # interactive assistant that creates a contest file
 ```
 
+## Environment
+
+`Dockerfile` (repo root) defines the environment, pinned so rebuilds are identical: Node 22.23.2 on Debian 13 (by image digest) and AWS CLI 2.37.6 (by checksum, from installers verified against the AWS CLI signing key). Stage `base` is what builds and deploys need; stage `dev` adds git and shell tools. The devcontainer builds `dev`; GitHub Actions builds `base` and runs `npm ci` and `scripts/deploy.sh` inside it. JavaScript dependencies are pinned by `package-lock.json` (`npm ci`), and `actions/checkout` is pinned to a commit.
+
+To update a pin, change the version together with its digest or checksums (the commands are in the Dockerfile comments), then rebuild the devcontainer and run a staging deploy before merging to `main`.
+
+The deploy workflow publishes the image to `ghcr.io/idlechara/icpccl-home`, tagged `base-<hash>` and `dev-<hash>` by the Dockerfile's content (plus `dev` for the latest). Deploys pull the existing `base` image and only build when the Dockerfile changed; the devcontainer uses `dev` as a build cache. `.github/CODEOWNERS` requires @idlechara's review for the environment, build and deploy files.
+
 ## Layout
 
 | Path | What it holds |
