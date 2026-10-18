@@ -1,0 +1,68 @@
+{%- comment -%} FAQ with topic index. Expects `faqData` ({ groups }). {%- endcomment -%}
+<section class="block">
+  <div class="faq">
+    <nav class="faq__index" aria-label="Temas de preguntas frecuentes">
+      {% for group in faqData.groups %}
+      <p>{{ group.title }}</p>
+      <ul>
+        {% for section in group.sections %}
+        <li><a href="#{{ section.id }}">{{ section.title }}</a></li>
+        {% endfor %}
+      </ul>
+      {% endfor %}
+    </nav>
+    <div>
+      {% for group in faqData.groups %}
+      <div class="faq__group" id="{{ group.id }}">
+        <h3>{{ group.title }}</h3>
+        {% for section in group.sections %}
+        <section class="panel faq__section" id="{{ section.id }}">
+          <h4>{{ section.title }}</h4>
+          {% if section.introHtml != blank %}<div class="faq__intro">{{ section.introHtml }}</div>{% endif %}
+          {% for q in section.questions %}
+          <details>
+            <summary><h5 id="{{ q.id }}">{{ q.question }}</h5></summary>
+            <div class="faq__answer">{{ q.html }}</div>
+          </details>
+          {% endfor %}
+        </section>
+        {% endfor %}
+      </div>
+      {% endfor %}
+      <p class="faq__more">¿No encontraste tu respuesta? <a href="/equipo/">Escríbenos</a>.</p>
+    </div>
+  </div>
+</section>
+
+{% if faqData.hasMermaid %}
+<script type="module">
+  // Draws ```mermaid diagrams, each when its answer is first opened (closed <details>
+  // have no size to lay out against). Without the CDN, the diagram source stays visible.
+  const diagrams = [...document.querySelectorAll("pre.mermaid")];
+  if (diagrams.length) {
+    // Measure labels with the real web font: if Roboto loads after layout, the labels are
+    // sized for the fallback font and their last letters get clipped.
+    await Promise.all([document.fonts.load('15px "Roboto"'), document.fonts.ready]);
+    const { default: mermaid } = await import("https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.esm.min.mjs");
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: "base",
+      fontFamily: "Roboto, system-ui, sans-serif",
+      themeVariables: {
+        primaryColor: "#ffffff",
+        primaryBorderColor: "#0061cc",
+        primaryTextColor: "#0f172a",
+        lineColor: "#64748b",
+        edgeLabelBackground: "#f8fafc",
+        fontSize: "15px",
+      },
+    });
+    const draw = (el) => el.dataset.processed || mermaid.run({ nodes: [el] });
+    for (const el of diagrams) {
+      const details = el.closest("details");
+      if (!details || details.open) draw(el);
+      else details.addEventListener("toggle", () => details.open && draw(el));
+    }
+  }
+</script>
+{% endif %}

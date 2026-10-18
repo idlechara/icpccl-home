@@ -1,0 +1,111 @@
+---
+layout: base.liquid
+---
+{%- assign hero = contests.next -%}
+{% if hero %}
+<header class="hero">
+  <div class="hero__content">
+    <p class="eyebrow">{{ hero.eyebrow }}</p>
+    <h1>{{ hero.name }}</h1>
+    <p class="hero__lead">{{ hero.summary }}</p>
+    <div class="hero__actions">
+      <a class="btn primary" href="{{ hero.pageUrl }}">Más información</a>
+      {% for link in hero.links %}{% if link.countdown or link.home == false %}{% continue %}{% endif %}{% if link.dev and site.dev == false %}{% continue %}{% endif %}
+      <a class="btn ghost" href="{{ link.url }}" target="_blank" rel="noreferrer">{{ link.label }}</a>
+      {% endfor %}
+    </div>
+    <div class="hero__meta">
+      <div>
+        <span>Fechas</span>
+        <strong>{{ hero.dates }}</strong>
+      </div>
+      {% if hero.place != blank %}
+      <div>
+        <span>Lugar</span>
+        <strong class="hero__place">{% if hero.placeLogo != blank %}<img src="{{ hero.placeLogo }}" alt="" width="40" height="40">{% endif %}{{ hero.place }}</strong>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="hero__card">
+    <p class="card-label">Cuenta regresiva</p>
+    <div id="countdown" class="countdown" data-start="{{ hero.startIso }}">
+      <div class="countdown__item"><span id="days">0</span><small>Días</small></div>
+      <div class="countdown__item"><span id="hours">0</span><small>Horas</small></div>
+      <div class="countdown__item"><span id="minutes">0</span><small>Minutos</small></div>
+      <div class="countdown__item"><span id="seconds">0</span><small>Segundos</small></div>
+    </div>
+    <p class="card-foot">La competencia comienza el {{ hero.startDay }} a las {{ hero.startTime }} (hora de Chile)</p>
+    <div class="hero-registration hero-registration--{{ hero.registration.status }}">
+      <p class="hero-registration__status">
+        <span class="hero-registration__dot" aria-hidden="true"></span>
+        {%- case hero.registration.status -%}
+          {%- when "open" -%}Inscripción abierta{% if hero.registration.deadline %} hasta el {{ hero.registration.deadline }}{% endif %}
+          {%- when "soon" -%}Inscripción aún no abierta
+          {%- else -%}Inscripción cerrada
+        {%- endcase -%}
+      </p>
+      {% if hero.registration.status == "open" %}<a class="btn primary" href="{{ hero.registration.url }}" target="_blank" rel="noreferrer">Inscribir equipo</a>{% endif %}
+    </div>
+    {% for link in hero.links %}{% if link.countdown %}{% unless link.dev and site.dev == false %}
+    <a class="card-link-inline" href="{{ link.url }}" target="_blank" rel="noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7Zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z"/></svg>{{ link.label }}</a>
+    {% endunless %}{% endif %}{% endfor %}
+  </div>
+</header>
+{% else %}
+<header class="hero">
+  <div class="hero__content">
+    <p class="eyebrow">ICPC Chile</p>
+    <h1>ICPC Chile</h1>
+    <p class="hero__lead">Pronto anunciaremos las próximas competencias. Mientras tanto, revisa las <a href="/faq/">preguntas frecuentes</a> o <a href="/equipo/">escríbenos</a>.</p>
+  </div>
+</header>
+{% endif %}
+
+<section class="block">
+  {%- comment %} With a single upcoming contest, the hero above already shows it {%- endcomment %}
+  {% if contests.upcoming.size > 1 %}
+  <h2>Próximas competencias</h2>
+  <div class="grid">
+    {% for contest in contests.upcoming %}
+    <a class="panel card-link" href="{{ contest.pageUrl }}">
+      <span class="card-link__kind">{{ contest.kindLabel }}</span>
+      <h3>{{ contest.name }}</h3>
+      <p>{{ contest.dates }}{% if contest.place != blank %} · {{ contest.place }}{% endif %}</p>
+      <p>Inscripción: {% case contest.registration.status %}{% when "open" %}abierta{% if contest.registration.deadline %} hasta el {{ contest.registration.deadline }}{% endif %}{% when "soon" %}aún no abierta{% else %}cerrada{% endcase %}</p>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+  <h2 class="block__subtitle">Más información</h2>
+  <div class="grid">
+    <a class="panel card-link" href="/faq/">
+      <h3>Preguntas frecuentes</h3>
+      <p>Equipos, coaches, reglas, cómo ser sede y el ambiente técnico.</p>
+    </a>
+    <a class="panel card-link" href="/equipo/">
+      <h3>Equipo 2026</h3>
+      <p>Las personas detrás de las competencias de este año.</p>
+    </a>
+  </div>
+  {% include "sponsors.liquid", sponsorRows: sponsors.rows %}
+  {% if contests.past.size > 0 %}
+  <h2 class="block__subtitle">Competencias anteriores</h2>
+  <div class="grid">
+    {% for contest in contests.past %}
+    <div class="panel past-contest">
+      {%- comment %} Title links to the competition page, which shows the latest edition {%- endcomment %}
+      <span class="card-link__kind">{{ contest.kindLabel }}</span>
+      <h3><a href="{{ contest.pageUrl }}#{{ contest.slug }}">{{ contest.name }}</a></h3>
+      <p>{{ contest.dates }}{% if contest.place != blank %} · {{ contest.place }}{% endif %}</p>
+      <p class="past-contest__status">Finalizada</p>
+      {% if contest.results.size > 0 %}
+      <p class="past-contest__links">
+        {% for link in contest.results %}<a class="btn ghost" href="{{ link.url }}" target="_blank" rel="noreferrer">{{ link.label }}</a>{% endfor %}
+      </p>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</section>

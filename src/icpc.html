@@ -1,0 +1,24 @@
+---
+layout: base.liquid
+title: ICPC South America/South Finals
+permalink: /icpc/
+description: "El Regional ICPC en Chile: la ICPC South America/South Finals, competencia clasificatoria oficial de ICPC para Latinoamérica."
+---
+<header class="page-header">
+  <p class="eyebrow">Regional ICPC · Chile</p>
+  <h1>ICPC South America/South Finals</h1>
+  <p class="hero__lead">El Regional ICPC en Chile: la competencia clasificatoria oficial de ICPC para Latinoamérica.</p>
+  <p class="page-contact">Contacto: <a href="mailto:icpc.chile@gmail.com">icpc.chile@gmail.com</a></p>
+</header>
+
+{% for contest in contests.byKind.regional %}
+{% include "contest-section.liquid" %}
+{% else %}
+<p class="block__lead">Pronto anunciaremos la próxima edición de la ICPC South America/South Finals. Mientras tanto, revisa las <a href="/faq/">preguntas frecuentes</a>.</p>
+{% endfor %}
+
+{% unless site.dev == false and sponsors.public == false %}{% if sponsors.byCompetition.icpc.size > 0 %}
+<section class="block">
+{% include "sponsors.liquid", sponsorRows: sponsors.byCompetition.icpc %}
+</section>
+{% endif %}{% endunless %}

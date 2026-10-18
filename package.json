@@ -1,0 +1,20 @@
+{
+  "name": "icpccl-home",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env node_modules/@11ty/eleventy/cmd.cjs --serve",
+    "build": "rm -rf _site && eleventy",
+    "deploy": "bash scripts/deploy.sh prod",
+    "deploy:dry": "bash scripts/deploy.sh prod --dry-run",
+    "deploy:staging": "bash scripts/deploy.sh staging",
+    "deploy:staging:dry": "bash scripts/deploy.sh staging --dry-run",
+    "nueva-competencia": "node scripts/nueva-competencia.mjs"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.1.2",
+    "gray-matter": "^4.0.3",
+    "markdown-it": "^14.3.2",
+    "pagefind": "^1.5.2"
+  }
+}

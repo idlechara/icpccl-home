@@ -1,0 +1,27 @@
+# Dependencies and build output
+node_modules/
+_site/
+
+# Secrets: credentials live only in .env files and GitHub secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.aws/
+.wrangler/
+.dev.vars
+
+# Hidden page photo and text: kept out of the repo, uploaded to the bucket by hand
+bonus/
+
+# Local tool settings
+.claude/settings.local.json
+.vscode/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+.archive
+bonus/

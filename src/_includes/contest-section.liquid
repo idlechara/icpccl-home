@@ -1,0 +1,81 @@
+{%- comment -%} One contest (see contests/README.md). Expects `contest`. {%- endcomment -%}
+<section id="{{ contest.slug }}" class="block">
+  <h2>{{ contest.name }}</h2>
+  <p class="contest-meta">
+    <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7Zm12 8v10H5V10h14Z"/></svg>{{ contest.dates }}</span>
+    {% if contest.place != blank %}<span>{% if contest.placeLogo != blank %}<img class="contest-meta__logo" src="{{ contest.placeLogo }}" alt="" width="40" height="40">{% else %}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7Zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z"/></svg>{% endif %}{% if contest.mapUrl != blank %}<a href="{{ contest.mapUrl }}" target="_blank" rel="noreferrer">{{ contest.place }}</a>{% else %}{{ contest.place }}{% endif %}</span>{% endif %}
+  </p>
+  {% if contest.finished %}
+  <div class="notice notice--stack notice--done">
+    <p><strong>Finalizada.</strong> {% if contest.results.size > 0 %}Revisa los resultados oficiales o vuelve a resolver los problemas en la competencia virtual.{% else %}Esta edición ya terminó.{% endif %}</p>
+    {% if contest.results.size > 0 %}
+    <div class="notice__actions">
+      {% for link in contest.results %}
+      <a class="btn {% if forloop.first %}primary{% else %}ghost{% endif %}" href="{{ link.url }}" target="_blank" rel="noreferrer">{{ link.label }}</a>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  {% else %}
+  {% case contest.registration.status %}
+    {% when "open" %}
+  <div class="notice notice--stack notice--open">
+    <p><strong>Inscripción abierta{% if contest.registration.deadline %} hasta el {{ contest.registration.deadline }}{% endif %}.</strong>{% if contest.registration.note %} {{ contest.registration.note }}{% endif %}</p>
+    <div class="notice__actions">
+      <a class="btn primary" href="{{ contest.registration.url }}" target="_blank" rel="noreferrer">Inscribir equipo</a>
+    </div>
+  </div>
+    {% when "soon" %}
+  <p class="notice"><strong>Aún no abierta.</strong> {% if contest.registration.note %}{{ contest.registration.note }}{% else %}La inscripción al {{ contest.name }} todavía no está abierta. Publicaremos el enlace en esta página cuando se abra.{% endif %}</p>
+    {% when "closed" %}
+  <p class="notice"><strong>Inscripción cerrada.</strong> {% if contest.registration.note %}{{ contest.registration.note }}{% else %}El plazo de inscripción al {{ contest.name }} ya terminó.{% endif %}</p>
+  {% endcase %}
+  {% endif %}
+  <div class="block__lead block__lead--wide">{{ contest.descriptionHtml }}</div>
+
+  {% if contest.facts.size > 0 %}
+  <div class="grid">
+    {% for fact in contest.facts %}
+    <div class="panel fact">
+      <span>{{ fact.label }}</span>
+      <strong>{{ fact.value }}</strong>
+      {% if fact.html != blank %}<p>{{ fact.html }}</p>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if contest.agenda.size > 0 or contest.sites.size > 0 %}
+  <div class="grid">
+    {% for day in contest.agenda %}
+    <article class="panel">
+      <h3>{{ day.title }}</h3>
+      <table class="schedule">
+        {% for item in day.items %}
+        <tr{% if item.main %} class="is-main"{% endif %}><td>{{ item.time }}</td><td>{{ item.html }}</td></tr>
+        {% endfor %}
+      </table>
+    </article>
+    {% endfor %}
+    {% if contest.sites.size > 0 %}
+    <article class="panel">
+      <h3>Sedes</h3>
+      <ul>
+        {% for site in contest.sites %}
+        <li>{{ site }}</li>
+        {% endfor %}
+      </ul>
+    </article>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <div class="block__actions">
+    {% for link in contest.links %}{% if link.countdown %}{% continue %}{% endif %}{% if link.dev and site.dev == false %}{% continue %}{% endif %}
+    <a class="btn ghost" href="{{ link.url }}" target="_blank" rel="noreferrer">{{ link.label }}</a>
+    {% endfor %}
+    {% if contest.questions.size > 0 and contest.finished == false %}
+    <a class="btn ghost" href="/faq/#{{ contest.faqId }}">Preguntas frecuentes</a>
+    {% endif %}
+  </div>
+</section>

@@ -1,0 +1,15 @@
+{%- comment %} Sponsors (src/_data/sponsors.js), dev server only until `PUBLIC` is true. Expects `sponsorRows`. {%- endcomment %}
+{% if sponsorRows.size > 0 %}{% unless site.dev == false and sponsors.public == false %}
+<h2 class="block__subtitle">Patrocinadores</h2>
+<div class="sponsors">
+  {% for row in sponsorRows %}
+  <div class="sponsors__row">
+  {% for sponsor in row.list %}
+  {% if sponsor.url %}<a class="panel sponsor" href="{{ sponsor.url }}" target="_blank" rel="noreferrer">{% else %}<div class="panel sponsor">{% endif %}
+    {% if sponsor.logo %}<img src="/{{ sponsor.logo }}" alt="{{ sponsor.name | escape }}" loading="lazy">{% else %}<span class="sponsor__name">{{ sponsor.name | escape }}</span>{% endif %}
+  {% if sponsor.url %}</a>{% else %}</div>{% endif %}
+  {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+{% endunless %}{% endif %}

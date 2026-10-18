@@ -1,0 +1,24 @@
+---
+layout: base.liquid
+title: Torneo Chileno de Programación (TCP)
+permalink: /tcp/
+description: "El Torneo Chileno de Programación (TCP) es una competencia amistosa de programación competitiva, previa al Regional ICPC, que se juega el mismo día en varias sedes del país. El TCP no clasifica al Regional ICPC."
+---
+<header class="page-header">
+  <p class="eyebrow">TCP</p>
+  <h1>Torneo Chileno de Programación</h1>
+  <p class="hero__lead">El TCP es una competencia amistosa de programación competitiva, previa al Regional ICPC, que se juega el mismo día en varias sedes del país. El TCP no clasifica al Regional ICPC.</p>
+  <p class="page-contact">Contacto: <a href="mailto:tcp.competencia@gmail.com">tcp.competencia@gmail.com</a></p>
+</header>
+
+{% for contest in contests.byKind.tcp %}
+{% include "contest-section.liquid" %}
+{% else %}
+<p class="block__lead">Pronto anunciaremos la próxima edición del TCP. Mientras tanto, revisa las <a href="/faq/">preguntas frecuentes</a>.</p>
+{% endfor %}
+
+{% unless site.dev == false and sponsors.public == false %}{% if sponsors.byCompetition.tcp.size > 0 %}
+<section class="block">
+{% include "sponsors.liquid", sponsorRows: sponsors.byCompetition.tcp %}
+</section>
+{% endif %}{% endunless %}

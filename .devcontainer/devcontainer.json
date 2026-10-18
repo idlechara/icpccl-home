@@ -1,0 +1,20 @@
+{
+  "name": "icpccl-home",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
+  "features": {
+    // For manual syncs to R2 via its S3-compatible API
+    "ghcr.io/devcontainers/features/aws-cli:1": {}
+  },
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": { "label": "Eleventy", "onAutoForward": "openBrowser" }
+  },
+  "postCreateCommand": "npm install",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "github.vscode-github-actions"
+      ]
+    }
+  }
+}
