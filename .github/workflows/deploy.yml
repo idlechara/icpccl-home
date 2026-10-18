@@ -38,8 +38,9 @@ jobs:
 
       - run: npm ci
 
-      # R2_BUCKET is an environment secret (production / staging); the other R2_* secrets
-      # are shared repository secrets unless an environment defines its own.
+      # R2_BUCKET and the R2 keys are environment secrets (production / staging): each
+      # environment has its own bucket and a token scoped to it. R2_ACCOUNT_ID and
+      # EASTER_EGG_KEYS can be repository secrets.
       - name: Build and sync to R2
         run: bash scripts/deploy.sh "${{ inputs.target || 'prod' }}"
         env:
