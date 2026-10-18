@@ -19,6 +19,6 @@ npm start        # http://localhost:8080
 
 ## Publish
 
-A push to `main` deploys to https://icpc.cl. To deploy staging (https://staging.icpc.cl), use *Run workflow* in the Actions tab and pick `staging`. You can also deploy from your machine with `npm run deploy` or `npm run deploy:staging` after filling in `.env` from `.env.example`.
+A push to `main` deploys to https://icpc.cl, and a push to the `staging` branch deploys to https://staging.icpc.cl. Try changes on `staging` first, then merge them into `main`. You can also deploy from your machine with `npm run deploy` or `npm run deploy:staging` after filling in `.env` from `.env.example`.
 
 Everything else (content model, environments, hidden page, secrets, Cloudflare setup, gotchas) is in [AGENTS.md](AGENTS.md).

@@ -1,48 +1,71 @@
 name: Deploy to R2
 
-# Shown in the Actions list, so prod and staging runs are easy to tell apart
+# The branch decides the environment: main → production, staging → staging.
+# Run workflow (manual) redeploys the branch chosen in "Use workflow from".
 run-name: >-
-  Deploy ${{ inputs.target || 'prod' }} ·
+  Deploy ${{ github.ref_name == 'main' && 'prod' || 'staging' }} ·
   ${{ github.event_name == 'workflow_dispatch' && format('manual by {0}', github.actor) || github.event.head_commit.message }}
 
 on:
   push:
-    branches: [main]
+    branches: [main, staging]
   workflow_dispatch:
-    inputs:
-      target:
-        description: Ambiente
-        type: choice
-        options: [prod, staging]
-        default: prod
 
 concurrency:
-  group: deploy-${{ inputs.target || 'prod' }}
+  group: deploy-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
   deploy:
-    name: Deploy (${{ inputs.target || 'prod' }})
+    # Manual runs from any other branch don't deploy
+    if: github.ref_name == 'main' || github.ref_name == 'staging'
+    name: Deploy (${{ github.ref_name == 'main' && 'prod' || 'staging' }})
     runs-on: ubuntu-latest
-    # GitHub Environment: labels the run and lists it under Deployments, with a link to the site
+    permissions:
+      contents: read
+      packages: write  # publish the environment image to ghcr.io
+    # GitHub Environment: selects the secrets, labels the run and lists it under
+    # Deployments. Each environment only accepts its own branch (Deployment branches).
     environment:
-      name: ${{ (inputs.target || 'prod') == 'prod' && 'production' || 'staging' }}
-      url: ${{ (inputs.target || 'prod') == 'prod' && 'https://icpc.cl' || 'https://staging.icpc.cl' }}
+      name: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+      url: ${{ github.ref_name == 'main' && 'https://icpc.cl' || 'https://staging.icpc.cl' }}
     steps:
-      - uses: actions/checkout@v4
+      # Pinned to a commit (v4.3.0), not a moving tag
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
-      - run: npm ci
+      # Environment image (Dockerfile), tagged by the Dockerfile's content: pulled when it
+      # already exists, built and published once otherwise. The `dev` stage is published
+      # too, as a build cache for the devcontainer.
+      - name: Get environment image
+        id: image
+        run: |
+          repo="ghcr.io/${GITHUB_REPOSITORY,,}"
+          tag="$(echo "${{ hashFiles('Dockerfile') }}" | cut -c1-16)"
+          base="$repo:base-$tag"
+          if docker pull -q "$base"; then
+            echo "Usando imagen publicada: $base"
+          else
+            echo "Construyendo y publicando: $base"
+            docker build --target base --build-arg BUILDKIT_INLINE_CACHE=1 -t "$base" .
+            docker push -q "$base"
+            docker build --target dev --build-arg BUILDKIT_INLINE_CACHE=1 -t "$repo:dev-$tag" -t "$repo:dev" .
+            docker push -q "$repo:dev-$tag"
+            docker push -q "$repo:dev"
+          fi
+          echo "ref=$base" >> "$GITHUB_OUTPUT"
 
       # R2_BUCKET and the R2 keys are environment secrets (production / staging): each
       # environment has its own bucket and a token scoped to it. R2_ACCOUNT_ID and
       # EASTER_EGG_KEYS can be repository secrets.
       - name: Build and sync to R2
-        run: bash scripts/deploy.sh "${{ inputs.target || 'prod' }}"
+        run: >-
+          docker run --rm -v "$PWD:/workspace" -w /workspace
+          -e R2_ACCOUNT_ID -e R2_ACCESS_KEY_ID -e R2_SECRET_ACCESS_KEY -e R2_BUCKET -e EASTER_EGG_KEYS
+          "${{ steps.image.outputs.ref }}"
+          bash -c 'npm ci && bash scripts/deploy.sh "$0"' "${{ github.ref_name == 'main' && 'prod' || 'staging' }}"
         env:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}

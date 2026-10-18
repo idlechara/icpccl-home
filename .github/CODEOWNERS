@@ -1,0 +1,11 @@
+# Changes to the environment, the build and the deploy need @idlechara's review.
+# Enforced on main and staging by the branch rule "Require review from Code Owners".
+/Dockerfile           @idlechara
+/.devcontainer/       @idlechara
+/.github/             @idlechara
+/scripts/             @idlechara
+/package.json         @idlechara
+/package-lock.json    @idlechara
+/eleventy.config.js   @idlechara
+/lib/bonus.js         @idlechara
+/src/_data/site.js    @idlechara

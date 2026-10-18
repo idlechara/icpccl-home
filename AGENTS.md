@@ -12,6 +12,14 @@ npm run build              # production build into _site/
 npm run nueva-competencia  # interactive assistant that creates a contest file
 ```
 
+## Environment
+
+`Dockerfile` (repo root) defines the environment, pinned so rebuilds are identical: Node 22.23.2 on Debian 13 (by image digest) and AWS CLI 2.37.6 (by checksum, from installers verified against the AWS CLI signing key). Stage `base` is what builds and deploys need; stage `dev` adds git and shell tools. The devcontainer builds `dev`; GitHub Actions builds `base` and runs `npm ci` and `scripts/deploy.sh` inside it. JavaScript dependencies are pinned by `package-lock.json` (`npm ci`), and `actions/checkout` is pinned to a commit.
+
+To update a pin, change the version together with its digest or checksums (the commands are in the Dockerfile comments), then rebuild the devcontainer and run a staging deploy before merging to `main`.
+
+The deploy workflow publishes the image to `ghcr.io/idlechara/icpccl-home`, tagged `base-<hash>` and `dev-<hash>` by the Dockerfile's content (plus `dev` for the latest). Deploys pull the existing `base` image and only build when the Dockerfile changed; the devcontainer uses `dev` as a build cache. `.github/CODEOWNERS` requires @idlechara's review for the environment, build and deploy files.
+
 ## Layout
 
 | Path | What it holds |
@@ -85,9 +93,9 @@ Typing `EASTER_EGG_KEYS` on any page opens it. The page lives at a path derived 
 | Production | https://icpc.cl | `R2_BUCKET` |
 | Staging | https://staging.icpc.cl | `R2_BUCKET` of the staging environment (`.env.staging` locally) |
 
-**GitHub Actions** (`.github/workflows/deploy.yml`): a push to `main` deploys production; *Run workflow* lets you choose `prod` or `staging`. Runs are named after their target and tied to a GitHub Environment (`production` or `staging`) for labeling and the Deployments panel.
+**GitHub Actions** (`.github/workflows/deploy.yml`): the branch decides the environment. A push to `main` deploys production and a push to `staging` deploys staging; *Run workflow* redeploys the branch chosen in "Use workflow from". Other branches don't deploy. Runs are named after their target and tied to a GitHub Environment (`production` or `staging`), which selects the secrets; each environment only accepts its own branch (Deployment branches: `main` for production, `staging` for staging).
 
-Each environment has its own R2 token, scoped to its bucket, so a staging run can't write to production. Environment secrets (in both `production` and `staging`): `R2_BUCKET`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`. Repository secrets: `R2_ACCOUNT_ID` and optionally `EASTER_EGG_KEYS`. Set the `production` environment to accept deploys only from `main` (Deployment branches).
+Each environment has its own R2 token, scoped to its bucket, so a staging run can't write to production. Environment secrets (in both `production` and `staging`): `R2_BUCKET`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`. Repository secrets: `R2_ACCOUNT_ID` and optionally `EASTER_EGG_KEYS`. 
 
 **Manual**: `.env` (from `.env.example`) holds production's bucket and keys; `.env.staging` holds staging's `R2_BUCKET`, `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY` and overrides `.env` for staging deploys. A staging deploy refuses to run without its own `R2_BUCKET`. Commands: `npm run deploy`, `npm run deploy:dry`, `npm run deploy:staging`, `npm run deploy:staging:dry`.
 

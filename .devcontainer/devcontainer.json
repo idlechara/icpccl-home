@@ -1,15 +1,20 @@
 {
   "name": "icpccl-home",
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
-  "features": {
-    // For manual syncs to R2 via its S3-compatible API
-    "ghcr.io/devcontainers/features/aws-cli:1": {}
+  // Same pinned image as the GitHub Actions deploy (see the Dockerfile in the repo root)
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "context": "..",
+    "target": "dev",
+    // Reuse layers of the image published by the deploy workflow, if available
+    "cacheFrom": "ghcr.io/idlechara/icpccl-home:dev"
   },
+  "remoteUser": "node",
   "forwardPorts": [8080],
   "portsAttributes": {
     "8080": { "label": "Eleventy", "onAutoForward": "openBrowser" }
   },
-  "postCreateCommand": "npm install",
+  // npm ci installs exactly what package-lock.json says (npm install could change it)
+  "postCreateCommand": "npm ci",
   "customizations": {
     "vscode": {
       "extensions": [
