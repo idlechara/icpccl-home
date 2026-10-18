@@ -83,14 +83,13 @@ Typing `EASTER_EGG_KEYS` on any page opens it. The page lives at a path derived 
 | Environment | URL | Bucket |
 |---|---|---|
 | Production | https://icpc.cl | `R2_BUCKET` |
-| Staging | https://staging.icpc.cl | `R2_STAGING_BUCKET` locally; the `staging` environment's `R2_BUCKET` in Actions |
+| Staging | https://staging.icpc.cl | `R2_BUCKET` of the staging environment (`.env.staging` locally) |
 
-**GitHub Actions** (`.github/workflows/deploy.yml`): a push to `main` deploys production; *Run workflow* lets you choose `prod` or `staging`. Runs are named after their target and tied to a GitHub Environment (`production` or `staging`), which selects the secrets.
+**GitHub Actions** (`.github/workflows/deploy.yml`): a push to `main` deploys production; *Run workflow* lets you choose `prod` or `staging`. Runs are named after their target and tied to a GitHub Environment (`production` or `staging`) for labeling and the Deployments panel.
 
-- Repository secrets, shared: `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, optional `EASTER_EGG_KEYS`.
-- Environment secret `R2_BUCKET`: `icpc-chile` in `production`, `staging-icpc-chile` in `staging`. An environment secret overrides a repository secret of the same name, so separate staging credentials can be added to the `staging` environment later.
+Each environment has its own R2 token, scoped to its bucket, so a staging run can't write to production. Environment secrets (in both `production` and `staging`): `R2_BUCKET`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`. Repository secrets: `R2_ACCOUNT_ID` and optionally `EASTER_EGG_KEYS`. Set the `production` environment to accept deploys only from `main` (Deployment branches).
 
-**Manual**: copy `.env.example` to `.env` and fill in the credentials and both buckets. `.env.staging`, if present, overrides `.env` for staging deploys. Commands: `npm run deploy`, `npm run deploy:dry`, `npm run deploy:staging`, `npm run deploy:staging:dry`.
+**Manual**: `.env` (from `.env.example`) holds production's bucket and keys; `.env.staging` holds staging's `R2_BUCKET`, `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY` and overrides `.env` for staging deploys. A staging deploy refuses to run without its own `R2_BUCKET`. Commands: `npm run deploy`, `npm run deploy:dry`, `npm run deploy:staging`, `npm run deploy:staging:dry`.
 
 ### Cloudflare (once per environment)
 

@@ -4,13 +4,15 @@
 #
 # Usage: deploy.sh [prod|staging] [--dry-run]   (default: prod; DEPLOY_ENV also works)
 #
-# Needs R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY and R2_BUCKET. For staging,
-# R2_STAGING_BUCKET (if set) replaces R2_BUCKET: locally, .env can hold both buckets; in
-# GitHub Actions each environment (production / staging) has its own R2_* secrets, so a
-# staging run never sees the production credentials. Optional: SITE_URL (prod, defaults to
-# https://icpc.cl), STAGING_SITE_URL (staging) and EASTER_EGG_KEYS (see lib/bonus.js).
-# Read from the environment or from .env in the repo root; for staging, .env.staging
-# is also read if it exists and overrides .env. See .env.example.
+# Needs R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY and R2_BUCKET. Optional:
+# SITE_URL (prod, defaults to https://icpc.cl), STAGING_SITE_URL (staging) and
+# EASTER_EGG_KEYS (see lib/bonus.js).
+#
+# Each environment has its own token (scoped to its bucket) and its own R2_BUCKET:
+# - GitHub Actions: environment secrets of `production` / `staging`, already set when
+#   this script starts.
+# - Locally: .env holds production; .env.staging holds staging's R2_BUCKET and keys and
+#   overrides .env. A staging deploy refuses to run with production's bucket from .env.
 # DRY_RUN=1 (or --dry-run) only prints what would change.
 
 set -euo pipefail
@@ -48,19 +50,24 @@ if [[ "$target" != "prod" && "$target" != "staging" ]]; then
   exit 1
 fi
 
+# A bucket already in the environment (GitHub Actions) belongs to that environment
+bucket_from_env="${R2_BUCKET:-}"
 [[ -f .env ]] && load_env .env
+if [[ "$target" == "staging" && -z "$bucket_from_env" ]]; then
+  if ! [[ -f .env.staging ]] || ! grep -Eq '^[[:space:]]*R2_BUCKET[[:space:]]*=[[:space:]]*[^[:space:]]' .env.staging; then
+    echo "Staging necesita su propio R2_BUCKET y credenciales: en GitHub, como secretos del ambiente staging; localmente, en .env.staging (el de .env es producción)." >&2
+    exit 1
+  fi
+fi
 [[ "$target" == "staging" && -f .env.staging ]] && load_env .env.staging
 
 : "${R2_ACCOUNT_ID:?falta R2_ACCOUNT_ID}"
 : "${R2_ACCESS_KEY_ID:?falta R2_ACCESS_KEY_ID}"
 : "${R2_SECRET_ACCESS_KEY:?falta R2_SECRET_ACCESS_KEY}"
 
+: "${R2_BUCKET:?falta R2_BUCKET}"
 if [[ "$target" == "staging" ]]; then
-  R2_BUCKET="${R2_STAGING_BUCKET:-${R2_BUCKET:-}}"
-  : "${R2_BUCKET:?falta R2_STAGING_BUCKET (o R2_BUCKET en el ambiente staging)}"
   SITE_URL="${STAGING_SITE_URL:-https://staging.icpc.cl}"
-else
-  : "${R2_BUCKET:?falta R2_BUCKET}"
 fi
 
 echo "[$target] Construyendo para ${SITE_URL:-https://icpc.cl} → bucket ${R2_BUCKET}"
