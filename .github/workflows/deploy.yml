@@ -1,33 +1,31 @@
 name: Deploy to R2
 
-# Shown in the Actions list, so prod and staging runs are easy to tell apart
+# The branch decides the environment: main → production, staging → staging.
+# Run workflow (manual) redeploys the branch chosen in "Use workflow from".
 run-name: >-
-  Deploy ${{ inputs.target || 'prod' }} ·
+  Deploy ${{ github.ref_name == 'main' && 'prod' || 'staging' }} ·
   ${{ github.event_name == 'workflow_dispatch' && format('manual by {0}', github.actor) || github.event.head_commit.message }}
 
 on:
   push:
-    branches: [main]
+    branches: [main, staging]
   workflow_dispatch:
-    inputs:
-      target:
-        description: Ambiente
-        type: choice
-        options: [prod, staging]
-        default: prod
 
 concurrency:
-  group: deploy-${{ inputs.target || 'prod' }}
+  group: deploy-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
   deploy:
-    name: Deploy (${{ inputs.target || 'prod' }})
+    # Manual runs from any other branch don't deploy
+    if: github.ref_name == 'main' || github.ref_name == 'staging'
+    name: Deploy (${{ github.ref_name == 'main' && 'prod' || 'staging' }})
     runs-on: ubuntu-latest
-    # GitHub Environment: labels the run and lists it under Deployments, with a link to the site
+    # GitHub Environment: selects the secrets, labels the run and lists it under
+    # Deployments. Each environment only accepts its own branch (Deployment branches).
     environment:
-      name: ${{ (inputs.target || 'prod') == 'prod' && 'production' || 'staging' }}
-      url: ${{ (inputs.target || 'prod') == 'prod' && 'https://icpc.cl' || 'https://staging.icpc.cl' }}
+      name: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+      url: ${{ github.ref_name == 'main' && 'https://icpc.cl' || 'https://staging.icpc.cl' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -42,7 +40,7 @@ jobs:
       # environment has its own bucket and a token scoped to it. R2_ACCOUNT_ID and
       # EASTER_EGG_KEYS can be repository secrets.
       - name: Build and sync to R2
-        run: bash scripts/deploy.sh "${{ inputs.target || 'prod' }}"
+        run: bash scripts/deploy.sh "${{ github.ref_name == 'main' && 'prod' || 'staging' }}"
         env:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
