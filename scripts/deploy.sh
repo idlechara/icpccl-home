@@ -4,8 +4,10 @@
 #
 # Usage: deploy.sh [prod|staging] [--dry-run]   (default: prod; DEPLOY_ENV also works)
 #
-# Needs R2_ACCOUNT_ID, R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY, plus R2_BUCKET for
-# prod or R2_STAGING_BUCKET for staging. Optional: SITE_URL (prod, defaults to
+# Needs R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY and R2_BUCKET. For staging,
+# R2_STAGING_BUCKET (if set) replaces R2_BUCKET: locally, .env can hold both buckets; in
+# GitHub Actions each environment (production / staging) has its own R2_* secrets, so a
+# staging run never sees the production credentials. Optional: SITE_URL (prod, defaults to
 # https://icpc.cl), STAGING_SITE_URL (staging) and EASTER_EGG_KEYS (see lib/bonus.js).
 # Read from the environment or from .env in the repo root; for staging, .env.staging
 # is also read if it exists and overrides .env. See .env.example.
@@ -54,9 +56,9 @@ fi
 : "${R2_SECRET_ACCESS_KEY:?falta R2_SECRET_ACCESS_KEY}"
 
 if [[ "$target" == "staging" ]]; then
-  : "${R2_STAGING_BUCKET:?falta R2_STAGING_BUCKET}"
-  R2_BUCKET="$R2_STAGING_BUCKET"
-  SITE_URL="${STAGING_SITE_URL:-https://icpc-cl-staging.idlechara.net}"
+  R2_BUCKET="${R2_STAGING_BUCKET:-${R2_BUCKET:-}}"
+  : "${R2_BUCKET:?falta R2_STAGING_BUCKET (o R2_BUCKET en el ambiente staging)}"
+  SITE_URL="${STAGING_SITE_URL:-https://staging.icpc.cl}"
 else
   : "${R2_BUCKET:?falta R2_BUCKET}"
 fi

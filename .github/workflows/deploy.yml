@@ -1,5 +1,10 @@
 name: Deploy to R2
 
+# Shown in the Actions list, so prod and staging runs are easy to tell apart
+run-name: >-
+  Deploy ${{ inputs.target || 'prod' }} ·
+  ${{ github.event_name == 'workflow_dispatch' && format('manual by {0}', github.actor) || github.event.head_commit.message }}
+
 on:
   push:
     branches: [main]
@@ -17,7 +22,12 @@ concurrency:
 
 jobs:
   deploy:
+    name: Deploy (${{ inputs.target || 'prod' }})
     runs-on: ubuntu-latest
+    # GitHub Environment: labels the run and lists it under Deployments, with a link to the site
+    environment:
+      name: ${{ (inputs.target || 'prod') == 'prod' && 'production' || 'staging' }}
+      url: ${{ (inputs.target || 'prod') == 'prod' && 'https://icpc.cl' || 'https://staging.icpc.cl' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -28,6 +38,8 @@ jobs:
 
       - run: npm ci
 
+      # R2_BUCKET is an environment secret (production / staging); the other R2_* secrets
+      # are shared repository secrets unless an environment defines its own.
       - name: Build and sync to R2
         run: bash scripts/deploy.sh "${{ inputs.target || 'prod' }}"
         env:
@@ -35,5 +47,4 @@ jobs:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
-          R2_STAGING_BUCKET: ${{ secrets.R2_STAGING_BUCKET }}
           EASTER_EGG_KEYS: ${{ secrets.EASTER_EGG_KEYS }}
