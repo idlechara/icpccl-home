@@ -1,7 +1,5 @@
 ---
 name: TCP 2026
-kind: tcp
-navLabel: TCP
 eyebrow: Torneo Chileno de Programación
 summary: El Torneo Chileno de Programación es una competencia amistosa de programación competitiva, previa al Regional ICPC. Se juega el mismo día en nueve sedes del país, con un inicio sincronizado para todas.
 place: Nueve sedes en todo Chile

@@ -11,8 +11,8 @@ La forma más simple es [abrir un issue](https://github.com/idlechara/icpccl-hom
 La mayor parte del contenido está en archivos de texto (markdown) fáciles de editar, incluso desde la web de GitHub:
 
 - **Preguntas frecuentes:** `faq-tcp-icpc.md` (generales) y `faq-tecnico.md` (para sedes).
-- **Competencias** (fechas, inscripción, programa): `contests/`. Los campos están explicados en `contests/README.md`.
-- **Equipo:** `src/_data/team.js`.
+- **Competencias** (fechas, inscripción, programa): una carpeta por edición en `ediciones/`. Los campos están explicados en `ediciones/README.md`.
+- **Equipo:** `src/_data/team.js`. Cada rol indica los años en que se ejerció.
 
 Para proponer el cambio, haz un fork, edita en una rama nueva y abre un pull request hacia la rama `staging`. Una vez revisado, se publica primero en https://staging.icpc.cl y después en https://icpc.cl.
 

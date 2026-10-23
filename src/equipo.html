@@ -2,14 +2,14 @@
 layout: base.liquid
 title: Equipo
 permalink: /equipo/
-# Temporada que agradece esta página (cámbiala cada año)
-season: 2026
-description: "Quienes hacen posibles el Torneo Chileno de Programación (TCP) y la ICPC South America/South Finals en Chile, edición 2026."
+# The season comes from the contests (src/_data/team.js, `year`)
+eleventyComputed:
+  description: "Quienes hacen posibles el Torneo Chileno de Programación (TCP) y la ICPC South America/South Finals en Chile, edición {{ team.year }}."
 ---
 <header class="page-header">
-  <p class="eyebrow">Equipo {{ season }}</p>
+  <p class="eyebrow">Equipo {{ team.year }}</p>
   <h1>Quienes hacen posibles las competencias</h1>
-  <p class="hero__lead">Las personas detrás del TCP y la ICPC South America/South Finals {{ season }} en Chile. Agradecemos también a las sedes, coaches y voluntarios que participan en cada competencia.</p>
+  <p class="hero__lead">Las personas detrás del TCP y la ICPC South America/South Finals {{ team.year }} en Chile. Agradecemos también a las sedes, coaches y voluntarios que participan en cada competencia.</p>
 </header>
 
 <section class="block">
@@ -63,6 +63,23 @@ description: "Quienes hacen posibles el Torneo Chileno de Programación (TCP) y 
   </div>
 </section>
 
+{% if team.hasHistory %}
+<section class="block">
+  <h2 class="block__subtitle">Quienes han sido parte de ICPC Chile</h2>
+  <p class="block__lead">Todas las personas que han trabajado en el TCP y el Regional ICPC, con sus roles y años.</p>
+  <ul class="team-history">
+    {% for person in team.history %}
+    <li class="team-history__person" data-competitions="{{ person.competitions | join: ' ' }}">
+      <strong>{{ person.name | escape }}</strong>
+      {% for role in person.roles %}
+      <span class="team-history__role">{{ role.title | escape }} · {{ role.yearsText }}{% for c in role.competitions %} <span class="chip chip--{{ c.key }}" title="{{ c.name }}">{{ c.label }}</span>{% endfor %}</span>
+      {% endfor %}
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
 <script>
   // TCP / ICPC filter: hides the cards (and empty rows) of people outside the chosen competition
   (() => {
@@ -82,6 +99,9 @@ description: "Quienes hacen posibles el Torneo Chileno de Programación (TCP) y 
           if (!card.hidden) visible++;
         });
         row.hidden = visible === 0;
+      });
+      document.querySelectorAll(".team-history__person").forEach((item) => {
+        item.hidden = key !== "all" && !item.dataset.competitions.split(" ").includes(key);
       });
     });
   })();

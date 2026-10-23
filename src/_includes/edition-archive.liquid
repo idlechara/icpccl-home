@@ -1,0 +1,15 @@
+{%- comment %} Past editions of a competition, each linking to its page (/<kind>/<year>/). Expects `editions`. {%- endcomment %}
+{% if editions.size > 0 %}
+<section class="block">
+  <h2 class="block__subtitle">Ediciones anteriores</h2>
+  <div class="grid">
+    {% for contest in editions %}
+    <a class="panel card-link" href="{{ contest.editionUrl }}">
+      <span class="card-link__kind">{{ contest.year }}</span>
+      <h3>{{ contest.name }}</h3>
+      <p>{{ contest.dates }}{% if contest.place != blank %} · {{ contest.place }}{% endif %}</p>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}

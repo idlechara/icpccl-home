@@ -4,10 +4,10 @@
 #
 # Forma fácil: ejecuta `npm run nueva-competencia` y responde las preguntas.
 #
-# A mano: copia este archivo como contests/<tipo>-<año>.md (por ejemplo
-# contests/tcp-2027.md) y reemplaza cada valor __ENTRE_GUIONES__. El sitio no se
-# construye mientras quede alguno. Los archivos que empiezan con "_" (como este)
-# no se publican. Todos los campos están explicados en contests/README.md.
+# A mano: crea la carpeta ediciones/AAAA_MM_tipo (por ejemplo ediciones/2027_11_icpc;
+# tipo es tcp o icpc), copia este archivo dentro como competencia.md y reemplaza cada
+# valor __ENTRE_GUIONES__. El sitio no se construye mientras quede alguno. Todos los
+# campos están explicados en ediciones/README.md.
 #
 # Reglas de YAML que suelen romper el archivo:
 #   - Respeta la indentación (2 espacios, nunca tabulaciones).
@@ -16,12 +16,10 @@
 # ─────────────────────────────────────────────────────────────────────────────
 
 name: __NOMBRE__                    # p. ej. TCP 2027 o ICPC South America/South Finals 2027
-kind: __TIPO__                      # tcp o regional (decide si aparece en /tcp/ o /icpc/)
-navLabel: __ETIQUETA__              # texto corto: TCP o Regional
 summary: __RESUMEN__                # una o dos frases para la portada
 place: __LUGAR__                    # p. ej. Universidad Católica del Maule, Talca
 # mapUrl: https://maps.app.goo.gl/...   # opcional: enlace al mapa del lugar
-# placeLogo: sede.png                   # opcional: logo en src/img/sedes/
+# placeLogo: logo-sede.png              # opcional: logo de la sede, en esta carpeta
 # placeLogoWhite: true                  # opcional: si el logo es blanco
 dates: __FECHAS__                   # en texto, p. ej. 6 y 7 de noviembre de 2027
 
@@ -62,15 +60,21 @@ agenda:
 #   - Arica (UTA)
 #   - Talca (UCM)
 
-# Botones extra (opcional):
+# Botones extra (opcional). Un nombre de archivo sin "/" apunta a esta carpeta:
 # links:
 #   - label: Reglas (PDF)
-#     url: /archivo.pdf
+#     url: reglas.pdf
 
 # Resultados, se muestran cuando la competencia termina (opcional):
 # results:
 #   - label: Marcador
 #     url: https://...
+
+# Auspiciadores de esta edición (opcional), con su logo en esta carpeta (nombrado
+# como el id, p. ej. acme.png, o con `logo`). Solo se ven en npm start mientras
+# PUBLIC sea false en src/_data/sponsors.js.
+# sponsors:
+#   - { id: acme, name: Acme, url: https://acme.cl, row: 1 }
 ---
 __DESCRIPCION__
 

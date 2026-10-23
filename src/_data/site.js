@@ -20,7 +20,7 @@ export default function () {
     instagram: "icpc_chile",
     // Footer credit, shown only when `show` is true. `url` is optional: without it,
     // the name is plain text.
-    maintainer: { show: true, name: "@idlechara", url: "https://idlechara.net" },
+    maintainer: { show: false, name: "@idlechara", url: "https://idlechara.net" },
     // Footer links to the public repository; `show: false` hides them
     repository: { show: true, url: "https://github.com/idlechara/icpccl-home" },
   };

@@ -1,6 +1,6 @@
 # Preguntas frecuentes — TCP e ICPC Chile
 
-<!-- Preguntas generales. Las preguntas de cada edición (fechas, sedes, inscripción) van en el archivo de esa competencia, en contests/. -->
+<!-- Preguntas generales. Las preguntas de cada edición (fechas, sedes, inscripción) van en el competencia.md de esa edición, en ediciones/. -->
 
 - [Información general](#información-general)
   - [Sobre las competencias](#sobre-las-competencias)
@@ -104,6 +104,13 @@ Escribe a tcp.competencia@gmail.com indicando:
 - El nombre y el contacto del encargado de sede y del [contacto técnico de sede](/faq/tecnica/#que-es-el-contacto-tecnico-de-sede).
 - El espacio disponible: laboratorios o salas y cuántos puestos de competencia tiene cada uno.
 - La clave de la [prueba técnica](/faq/tecnica/#como-se-genera-la-prueba-tecnica), que demuestra que la sede puede ejecutar la competencia.
+
+## Sobre estas preguntas
+
+**¿Cómo aviso de un error o propongo una pregunta nueva?**
+Abre un [issue en el repositorio del sitio](https://github.com/idlechara/icpccl-home/issues/new/choose) contando qué falta o qué está mal y en qué página. Sirve para dudas que la FAQ no responde, correcciones y pedidos de información nueva, del TCP o del Regional ICPC. Necesitas una cuenta de GitHub.
+
+Los issues son públicos, así que no incluyas datos personales ni de tu inscripción. Las consultas sobre un equipo o una inscripción van por correo: tcp.competencia@gmail.com (TCP) o icpc.chile@gmail.com (Regional ICPC).
 
 ---
 

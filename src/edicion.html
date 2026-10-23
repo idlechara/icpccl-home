@@ -1,0 +1,19 @@
+---
+layout: base.liquid
+# One permanent page per edition (ediciones/<YYYY_MM_kind>/), at /<kind>/<year>/
+pagination:
+  data: contests.all
+  size: 1
+  alias: contest
+permalink: "{{ contest.editionUrl }}"
+eleventyComputed:
+  title: "{{ contest.name }}"
+  description: "{{ contest.summary }}"
+---
+<header class="page-header">
+  <p class="eyebrow">{{ contest.kindName }} · Edición {{ contest.year }}</p>
+  <h1>{{ contest.name }}</h1>
+  <p class="page-contact"><a href="{{ contest.pageUrl }}">Ver todo sobre {% if contest.kind == "tcp" %}el TCP{% else %}el Regional ICPC{% endif %}</a></p>
+</header>
+
+{% include "contest-section.liquid", heading: false %}

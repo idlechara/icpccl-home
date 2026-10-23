@@ -1,14 +1,12 @@
 ---
 name: ICPC South America/South Finals 2026
-kind: regional
-navLabel: Regional
 eyebrow: Regional ICPC · Chile
 faqTitle: ICPC South America/South Finals 2026 — Talca
 summary: Equipos universitarios de todo el país se reúnen en la Universidad Católica del Maule, en Talca, para la ICPC South America/South Finals (el Regional ICPC), la competencia clasificatoria de ICPC Latinoamérica.
 place: Universidad Católica del Maule, Talca
 mapUrl: https://maps.app.goo.gl/WNC2eTYWAPQCd2KfA
-placeLogo: ucm-logo-h.png   # logo de la sede, en src/img/sedes/
-placeLogoWhite: true        # el logo es blanco: se oscurece sobre fondos claros
+placeLogo: logo-ucm.png   # logo de la sede, en esta carpeta
+placeLogoWhite: true      # el logo es blanco: va sin fondo blanco en la portada
 dates: 6 y 7 de noviembre de 2026
 start: 2026-11-07T14:00:00-03:00
 end: 2026-11-07T23:59:00-03:00
@@ -44,12 +42,20 @@ agenda:
       - ["20:00", "Cena y premiación"]
 links:
   - label: Reglas (PDF)
-    url: /2026-2027 ICPC Latin America - Promotion Rules.pdf
+    url: reglas-2026-2027.pdf
   - label: Ubicación
     url: https://maps.app.goo.gl/WNC2eTYWAPQCd2KfA
   - label: Cómo llegar
-    url: /img/mapa-ucm-icpc-2026.pdf  # mapa del campus con los lugares del evento
+    url: mapa-ucm.pdf  # mapa del campus con los lugares del evento
     countdown: true # en la portada se muestra bajo la cuenta regresiva
+# Placeholders: reemplazar por los auspiciadores reales (solo se ven en npm start
+# mientras PUBLIC sea false en src/_data/sponsors.js)
+sponsors:
+  - { id: auspiciador-1, name: Auspiciador 1, row: 1 }
+  - { id: auspiciador-2, name: Auspiciador 2, row: 1 }
+  - { id: auspiciador-3, name: Auspiciador 3, row: 2 }
+  - { id: auspiciador-4, name: Auspiciador 4, row: 2 }
+  - { id: auspiciador-5, name: Auspiciador 5, row: 2 }
 ---
 Los equipos se inscriben en el sistema de ICPC. No es necesario haber participado en el TCP: puedes cambiar integrantes o inscribir un equipo nuevo.
 
