@@ -7,12 +7,13 @@ faqTitle: ICPC South America/South Finals 2026 — Talca
 summary: Equipos universitarios de todo el país se reúnen en la Universidad Católica del Maule, en Talca, para la ICPC South America/South Finals (el Regional ICPC), la competencia clasificatoria de ICPC Latinoamérica.
 place: Universidad Católica del Maule, Talca
 mapUrl: https://maps.app.goo.gl/WNC2eTYWAPQCd2KfA
-# placeLogo: ucm.png   # logo de la sede, en src/img/sedes/
+placeLogo: ucm-logo-h.png   # logo de la sede, en src/img/sedes/
+placeLogoWhite: true        # el logo es blanco: se oscurece sobre fondos claros
 dates: 6 y 7 de noviembre de 2026
 start: 2026-11-07T14:00:00-03:00
 end: 2026-11-07T23:59:00-03:00
 registration:
-  status: open
+  status: closed
   url: https://icpc.global/regionals/finder/SouthAmerica-South-2027
   deadline: 20 de octubre
   note: El pago es por transferencia. [Ver datos de pago](/faq/#como-se-paga-la-inscripcion-al-regional-icpc)
@@ -47,7 +48,7 @@ links:
   - label: Ubicación
     url: https://maps.app.goo.gl/WNC2eTYWAPQCd2KfA
   - label: Cómo llegar
-    url: /img/plano-ucm-icpc-2026.jpeg  # plano del campus con la sala marcada
+    url: /img/mapa-ucm-icpc-2026.pdf  # mapa del campus con los lugares del evento
     countdown: true # en la portada se muestra bajo la cuenta regresiva
 ---
 Los equipos se inscriben en el sistema de ICPC. No es necesario haber participado en el TCP: puedes cambiar integrantes o inscribir un equipo nuevo.

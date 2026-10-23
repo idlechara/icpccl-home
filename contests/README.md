@@ -23,7 +23,8 @@ Los archivos que empiezan con `_` (como la plantilla) no se publican.
 | `summary` | no | Párrafo corto para la cabecera. |
 | `dates` | no | Fechas en texto ("6 y 7 de noviembre de 2026"). Por defecto, el día de `start`. |
 | `place` | no | Lugar. Se muestra bajo el título, junto a las fechas. |
-| `placeLogo` | no | Logo del lugar: nombre de un archivo en `src/img/sedes/` (p. ej. `ucm.png`). Se muestra junto al lugar en la portada y bajo el título de la competencia. |
+| `placeLogo` | no | Logo del lugar: nombre de un archivo en `src/img/sedes/` (p. ej. `ucm-logo-h.png`). Se muestra en la portada, bajo la cuenta regresiva y junto a los enlaces `countdown`, sobre fondo blanco. |
+| `placeLogoWhite` | no | `true` si el logo es blanco: se muestra sin el fondo blanco, directo sobre el fondo azul. |
 | `mapUrl` | no | Enlace al mapa del lugar; si existe, `place` se muestra como enlace. |
 | `registration.status` | no | `open`, `soon` (aún no abierta) o `closed`. Por defecto, `open` si hay `url` y `soon` si no. |
 | `registration.url` | si `open` | Enlace de inscripción. |
