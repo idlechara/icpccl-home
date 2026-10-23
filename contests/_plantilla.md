@@ -22,6 +22,7 @@ summary: __RESUMEN__                # una o dos frases para la portada
 place: __LUGAR__                    # p. ej. Universidad Católica del Maule, Talca
 # mapUrl: https://maps.app.goo.gl/...   # opcional: enlace al mapa del lugar
 # placeLogo: sede.png                   # opcional: logo en src/img/sedes/
+# placeLogoWhite: true                  # opcional: si el logo es blanco
 dates: __FECHAS__                   # en texto, p. ej. 6 y 7 de noviembre de 2027
 
 # Inicio y término de la competencia, con zona horaria de Chile.

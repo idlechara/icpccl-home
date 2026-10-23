@@ -22,7 +22,7 @@ layout: base.liquid
       {% if hero.place != blank %}
       <div>
         <span>Lugar</span>
-        <strong class="hero__place">{% if hero.placeLogo != blank %}<img src="{{ hero.placeLogo }}" alt="" width="40" height="40">{% endif %}{{ hero.place }}</strong>
+        <strong class="hero__place">{{ hero.place }}</strong>
       </div>
       {% endif %}
     </div>
@@ -47,9 +47,12 @@ layout: base.liquid
       </p>
       {% if hero.registration.status == "open" %}<a class="btn primary" href="{{ hero.registration.url }}" target="_blank" rel="noreferrer">Inscribir equipo</a>{% endif %}
     </div>
-    {% for link in hero.links %}{% if link.countdown %}{% unless link.dev and site.dev == false %}
-    <a class="card-link-inline" href="{{ link.url }}" target="_blank" rel="noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7Zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z"/></svg>{{ link.label }}</a>
-    {% endunless %}{% endif %}{% endfor %}
+    <div class="hero__venue">
+      {% if hero.placeLogo != blank %}<img class="hero__logo{% if hero.placeLogoWhite %} is-white{% endif %}" src="{{ hero.placeLogo }}" alt="{{ hero.place | escape }}">{% endif %}
+      {% for link in hero.links %}{% if link.countdown %}{% unless link.dev and site.dev == false %}
+      <a class="card-link-inline" href="{{ link.url }}" target="_blank" rel="noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7Zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z"/></svg>{{ link.label }}</a>
+      {% endunless %}{% endif %}{% endfor %}
+    </div>
   </div>
 </header>
 {% else %}

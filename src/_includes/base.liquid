@@ -608,27 +608,49 @@ main {
   gap: 0.4rem;
 }
 
-.contest-meta__logo {
-  width: auto;
-  height: 1.6rem;
-  max-width: 4rem;
-  object-fit: contain;
-}
-
 .hero__place {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.hero__place img {
-  width: auto;
-  height: 2rem;
-  max-width: 5rem;
+/* Venue logo, with the countdown links beside it (vertically centered). The logo
+   grows up to 15rem wide and shrinks first on narrow screens. White logos
+   (placeLogoWhite) go bare on the dark hero; others get a white background. */
+.hero__venue {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.hero__venue:not(:has(*)) {
+  display: none;
+}
+
+/* Centered in the space beside the logo */
+.hero__venue .card-link-inline {
+  align-self: center;
+  flex: none;
+  margin-inline: auto;
+}
+
+.hero__logo {
+  flex: 1 1 8rem;
+  min-width: 0;
+  max-width: 15rem;
+  height: auto;
   object-fit: contain;
-  padding: 0.15rem;
-  border-radius: 6px;
+  padding: 0.4rem;
+  border-radius: 8px;
   background: #fff;
+}
+
+.hero__logo.is-white {
+  padding: 0;
+  border-radius: 0;  /* rounded corners would clip logos that touch the edges */
+  background: none;
 }
 
 .contest-meta svg {

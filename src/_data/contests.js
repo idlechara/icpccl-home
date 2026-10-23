@@ -94,6 +94,8 @@ function loadContest(file) {
     place: data.place ?? "",
     mapUrl: data.mapUrl ?? "",
     placeLogo: findPlaceLogo(data.placeLogo, file),
+    // White logos go bare on the dark hero and are darkened on light backgrounds
+    placeLogoWhite: data.placeLogoWhite === true,
     start,
     end,
     startIso: start.toISOString(),
