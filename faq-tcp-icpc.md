@@ -114,7 +114,7 @@ Escribe a tcp.competencia@gmail.com indicando:
 | Rol | Nombre | Correo |
 |---|---|---|
 | ICPC Chile Site Director | Cristian Ruz | cristian.ruz@gmail.com |
-| Coordinación Logística | Carla Gallardo | carla.gestrada@gmail.com |
-| ICPC Chile Systems Group Manager | Erik Regla | erik.regla@gmail.com |
+| ICPC Chile Head of Logistics | Carla Gallardo | carla.gestrada@gmail.com |
+| ICPC Chile Head of Systems | Erik Regla | erik.regla@gmail.com |
 
 Correos de las competencias: tcp.competencia@gmail.com (TCP) e icpc.chile@gmail.com (Regional ICPC).

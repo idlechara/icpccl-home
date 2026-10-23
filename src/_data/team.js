@@ -53,7 +53,7 @@ const team = [
     name: "Erik Regla",
     row: 1,
     photo: "reglae.jpg",
-    roles: [{ title: "ICPC Chile Systems Group Manager", in: ["tcp", "icpc"] }],
+    roles: [{ title: "ICPC Chile Head of Systems", in: ["tcp", "icpc"] }],
     tooltip: ["ICPC Chile Systems Group Manager", "Observeitor Dev"],
     // topics: "Temas técnicos: MaratonaLinux, computadores y red.",
     email: "erik.regla@gmail.com",
