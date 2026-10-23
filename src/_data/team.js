@@ -43,7 +43,7 @@ const team = [
     name: "Carla Gallardo",
     row: 1,
     photo: "cgallardo.jpg",
-    roles: [{ title: "Coordinación Logística", in: ["tcp", "icpc"] }],
+    roles: [{ title: "ICPC Chile Head of Logistics", in: ["tcp", "icpc"] }],
     tooltip: ["ICPC Chile Logistics Director"],
     // topics: "Logística de sedes.",
     email: "carla.gestrada@gmail.com",
