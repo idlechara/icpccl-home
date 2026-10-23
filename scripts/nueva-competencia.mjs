@@ -1,14 +1,14 @@
 #!/usr/bin/env node
-// Asistente para crear una competencia nueva: pregunta los datos básicos, escribe
-// contests/<tipo>-<año>.md a partir de contests/_plantilla.md y prueba que el sitio
-// se construya. Uso: npm run nueva-competencia
+// Asistente para crear una competencia nueva: pregunta los datos básicos, crea
+// ediciones/<AAAA_MM_tipo>/competencia.md a partir de ediciones/_plantilla.md y prueba
+// que el sitio se construya. Uso: npm run nueva-competencia
 
 import { createInterface } from "node:readline";
-import { existsSync, readFileSync, writeFileSync, unlinkSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { stdin, stdout } from "node:process";
 
-const TEMPLATE = "contests/_plantilla.md";
+const TEMPLATE = "ediciones/_plantilla.md";
 const TIME_ZONE = "America/Santiago";
 // Answers come from a line queue, so piped input (several lines at once) also works
 const rl = createInterface({ input: stdin, terminal: false });
@@ -57,29 +57,29 @@ const quote = (s) => (/[:#\[\]{}*&!|>'"%@`]/.test(s) || /^\s|\s$/.test(s) ? JSON
 
 console.log("\nNueva competencia. Presiona Enter para aceptar el valor entre corchetes.\n");
 
-const kind = await ask("Tipo (tcp o regional)", {
-  validate: (v) => (["tcp", "regional"].includes(v) ? null : 'Escribe "tcp" o "regional".'),
+const kindAnswer = await ask("Tipo (tcp o icpc)", {
+  validate: (v) => (["tcp", "icpc", "regional"].includes(v) ? null : 'Escribe "tcp" o "icpc".'),
 });
-const year = await ask("Año", {
-  fallback: String(new Date().getFullYear()),
-  validate: (v) => (/^\d{4}$/.test(v) ? null : "Escribe el año con 4 dígitos."),
-});
-const file = `contests/${kind}-${year}.md`;
-if (existsSync(file)) {
-  console.log(`\n✗ Ya existe ${file}. Edítalo directamente o bórralo antes de usar el asistente.`);
-  process.exit(1);
-}
-
-const defaults = kind === "tcp"
-  ? { name: `TCP ${year}`, label: "TCP", place: "Varias sedes en todo Chile" }
-  : { name: `ICPC South America/South Finals ${year}`, label: "Regional", place: "" };
-
-const name = await ask("Nombre", { fallback: defaults.name });
-const place = await ask("Lugar (institución y ciudad)", { fallback: defaults.place, validate: (v) => (v ? null : "Falta el lugar.") });
+const kind = kindAnswer === "regional" ? "icpc" : kindAnswer;
 const startText = await ask("Inicio de la competencia, hora de Chile (AAAA-MM-DD HH:MM)", {
   validate: (v) => (chileTimestamp(v) ? null : "Usa el formato 2027-11-06 14:00."),
 });
 const start = chileTimestamp(startText);
+// The folder name comes from the start date: ediciones/2027_11_icpc
+const [year, month] = startText.split("-");
+const dir = `ediciones/${year}_${month}_${kind}`;
+const file = `${dir}/competencia.md`;
+if (existsSync(dir)) {
+  console.log(`\n✗ Ya existe ${dir}. Edita ${file} directamente o borra la carpeta antes de usar el asistente.`);
+  process.exit(1);
+}
+
+const defaults = kind === "tcp"
+  ? { name: `TCP ${year}`, place: "Varias sedes en todo Chile" }
+  : { name: `ICPC South America/South Finals ${year}`, place: "" };
+
+const name = await ask("Nombre", { fallback: defaults.name });
+const place = await ask("Lugar (institución y ciudad)", { fallback: defaults.place, validate: (v) => (v ? null : "Falta el lugar.") });
 const durationHours = await ask("Duración en horas", { fallback: "5", validate: (v) => (+v > 0 ? null : "Escribe un número de horas.") });
 const end = new Date(new Date(start).getTime() + +durationHours * 3600_000);
 const endText = chileTimestamp(
@@ -93,8 +93,6 @@ rl.close();
 
 const values = {
   __NOMBRE__: quote(name),
-  __TIPO__: kind,
-  __ETIQUETA__: defaults.label,
   __RESUMEN__: quote(summary),
   __LUGAR__: quote(place),
   __FECHAS__: quote(dates),
@@ -113,14 +111,15 @@ for (const [token, value] of Object.entries(values)) text = text.replaceAll(toke
 text = text.replace(/^(?![ \t]*#)([^\n]*?\S)[ \t]{2,}(# [^\n]*)$/gm, "$1  $2");
 // Inside the FAQ example comment, keep the plain name
 text = text.replaceAll(`**¿Cuándo es el ${quote(name)}?**`, `**¿Cuándo es el ${name}?**`);
+mkdirSync(dir, { recursive: true });
 writeFileSync(file, text);
 
 console.log(`\nCreado ${file}. Probando que el sitio se construya...`);
 const build = spawnSync("npx", ["@11ty/eleventy", "--dryrun", "--quiet"], { encoding: "utf8" });
 if (build.status !== 0) {
-  const message = (build.stderr || build.stdout).split("\n").find((l) => l.includes("[contests]")) ?? build.stderr;
-  console.log(`\n✗ El sitio no se pudo construir:\n${message}\n\nSe eliminó ${file} para no dejar un archivo roto.`);
-  unlinkSync(file);
+  const message = (build.stderr || build.stdout).split("\n").find((l) => l.includes("[ediciones]")) ?? build.stderr;
+  console.log(`\n✗ El sitio no se pudo construir:\n${message}\n\nSe eliminó ${dir} para no dejar una carpeta rota.`);
+  rmSync(dir, { recursive: true });
   process.exit(1);
 }
-console.log(`✓ Listo. Revisa ${file} para agregar el resto (tarjetas, agenda, sedes, enlaces) y prueba con npm start.\n`);
+console.log(`✓ Listo. Revisa ${file} para agregar el resto (tarjetas, agenda, sedes, enlaces), deja los PDF y logos en ${dir}/ y prueba con npm start.\n`);

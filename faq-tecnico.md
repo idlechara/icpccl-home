@@ -12,6 +12,7 @@ Las dos competencias usan el mismo ambiente, pero la sede cumple un rol distinto
 |---|---|---|
 | **Sedes** | Varias sedes en el país, en simultáneo | Una sede en Chile, que por lo general cambia cada año |
 | **Quién opera el ambiente durante la competencia** | El contacto técnico de cada sede | El Systems Group Manager y el Technical Group de ICPC Chile, con el staff técnico anfitrión |
+| **Sistema de competencia** | [MOJ](#sistema-de-competencia-moj), administrado por cada sede | [MOJ](#sistema-de-competencia-moj), administrado por el equipo de sistemas de ICPC Latinoamérica |
 | **Contacto técnico de sede** | Valida, prepara, opera, da soporte y libera los equipos | Solo valida y prepara; no recibe credenciales |
 | **Staff técnico anfitrión** | No aplica | Mínimo 1 persona por cada 15 equipos en cada sala; ideal 2 a 3 |
 | **WiFi** | Permitido | No: solo red por cable |
@@ -33,7 +34,7 @@ Las dos competencias usan el mismo ambiente, pero la sede cumple un rol distinto
 - Instalar MaratonaLinux en los puestos de competencia, las [máquinas de respaldo](#cuantas-maquinas-de-respaldo-se-necesitan) y las estaciones de staff ([idealmente una semana antes; como mínimo, una máquina semilla](#con-cuanta-anticipacion-conviene-preparar-los-computadores)).
 - Mantener la máquina semilla actualizada; como mínimo, actualizarla el día antes de la competencia.
 - Probar el ambiente con la [imagen de prueba](#puedo-probar-el-sistema-antes).
-- En el TCP: confirmar que llegaron los [tres correos](#que-correos-recibe-la-sede-antes-del-tcp) (plataforma, credenciales y anuncio), [generar las credenciales de todos los equipos](#que-debe-revisar-la-sede-con-las-credenciales-de-los-equipos-en-el-tcp) y probar el acceso al sistema de competencia.
+- En el TCP: confirmar que llegaron los [tres correos de MOJ](#que-correos-llegan-antes-de-la-competencia) (plataforma, credenciales y anuncio), [generar las credenciales de todos los equipos](#quien-genera-las-credenciales-de-los-equipos) y [probar el acceso a MOJ](#como-se-verifica-que-los-equipos-pueden-acceder-a-moj). En el Regional ICPC, MOJ lo prepara el equipo de sistemas de ICPC Latinoamérica, no la sede.
 
 **Día de la competencia**:
 - Estar presentes desde el warmup hasta el cierre.
@@ -48,7 +49,7 @@ Las dos competencias usan el mismo ambiente, pero la sede cumple un rol distinto
 
 La parte técnica de una competencia se organiza en tres niveles, que trabajan coordinados entre sí. Sistemas opera de forma separada de la dirección de sede: en Chile, el Systems Group trabaja aparte, colaborando con la dirección de la competencia (Chile Site Director).
 
-- **ICPC Latinoamérica:** los mantenedores de MaratonaLinux, el sistema de competencia (que puede ser BOCA, MOJ u otro) y el equipo de sistemas que monitorea el Regional ICPC.
+- **ICPC Latinoamérica:** los mantenedores de MaratonaLinux, el sistema de competencia ([MOJ](https://moj.naquadah.com.br/), que usan el TCP y el Regional ICPC) y el equipo de sistemas que monitorea el Regional ICPC.
 - **ICPC Chile (la sede Chile):** el **Systems Group**, a cargo de los aspectos técnicos y de soporte, dirigido por el Systems Group Manager. Dentro del Systems Group está el **Technical Group**, dedicado al soporte durante la competencia.
 - **Cada sede anfitriona:** el contacto técnico de sede y, en el Regional ICPC, el staff técnico anfitrión, que forma parte del staff de la sede.
 
@@ -376,35 +377,42 @@ La máquina semilla, en cambio, debe estar al día: una semilla de hace un mes n
 
 La razón es el ancho de banda: en Latinoamérica suelen realizarse competencias similares en las mismas fechas, y cuando muchas sedes instalan a última hora, decenas de computadores descargan desde los mismos servidores a la vez. Eso puede afectar seriamente la velocidad de descarga y retrasar la instalación justo cuando no hay margen.
 
-# Sistema de competencia del TCP (MOJ)
+# Sistema de competencia (MOJ)
 
-## Antes del TCP
+## Preparación de MOJ
 
-Esta sección aplica **solo al TCP**. En el TCP 2026 se usó [MOJ](https://moj.naquadah.com.br/) como sistema de competencia.
+Desde 2026, el TCP y el Regional ICPC usan [MOJ](https://moj.naquadah.com.br/) como sistema de competencia. En el TCP, cada sede administra su parte con su contacto técnico. En el Regional ICPC lo administra el equipo de sistemas de ICPC Latinoamérica; la sede anfitriona no recibe credenciales de MOJ.
 
-**¿Qué correos recibe la sede antes del TCP?**
-Tres correos: la plataforma MOJ, las credenciales y un anuncio. Si alguno no llegó (y tampoco está en spam), avísale al Systems Group Manager.
+**¿Qué correos llegan antes de la competencia?**
+Tres correos de MOJ: la plataforma, las credenciales y un anuncio. En el TCP los recibe el contacto técnico de cada sede; en el Regional ICPC, el equipo de sistemas de ICPC Latinoamérica. Si alguno no llegó (y tampoco está en spam), avísale al Systems Group Manager.
 
 **¿Cuál es el usuario de los equipos en el TCP?**
 No es el correo del equipo: los usuarios tienen la forma `team<sede><id>`. Las instrucciones para obtenerlos llegan en el correo con asunto «TCP – Credenciales MOJ sede &lt;sede&gt;».
 
-**¿Qué debe revisar la sede con las credenciales de los equipos en el TCP?**
-Antes de que empiece la competencia (puede ser el mismo día, unas horas antes), la sede debe generar las credenciales de todos sus equipos siguiendo las instrucciones del correo de credenciales, y comprobar que cada equipo inscrito tenga las suyas y que se generen correctamente. Así quedan listas para entregarlas (por ejemplo, impresas) cuando lleguen los equipos. Si alguna no se puede generar, avísale al Systems Group Manager de inmediato, para que haya tiempo de resolverlo antes del inicio.
+**¿Quién genera las credenciales de los equipos?**
+Las credenciales de todos los equipos se generan antes de que empiece la competencia (puede ser el mismo día, unas horas antes). Hay que comprobar que cada equipo inscrito tenga las suyas y que se generen bien, para entregarlas (por ejemplo, impresas) cuando lleguen los equipos.
 
-**¿Qué cuentas tiene el staff de sede en el TCP?**
-- **`.staff`:** la cuenta para operar la sede durante la competencia, por ejemplo para marcar que se entregó un globo.
-- **`.cstaff`:** una cuenta con permisos más limitados; no permite marcar globos.
+- **En el TCP:** las genera cada sede, siguiendo las instrucciones del correo de credenciales.
+- **En el Regional ICPC:** las obtiene el Regional Contest Director (RCD) con la cuenta `.cstaff`.
 
-La consola de administración de MOJ se abre desde un enlace casi invisible en la esquina inferior derecha de la página de la competencia.
+Si alguna no se puede generar, avísale al Systems Group Manager de inmediato, para que haya tiempo de resolverlo antes del inicio.
 
-**¿Cómo verifico que los equipos pueden acceder al sistema de competencia del TCP?**
-Inicia sesión con una cuenta de prueba en uno de los computadores y envía una solución de práctica. Mientras las sedes preparan los computadores, el firewall de la competencia queda abierto para hacer estas pruebas.
+**¿Qué cuentas de staff tiene MOJ?**
+- **`.staff`:** opera la competencia, por ejemplo para marcar que se entregó un globo. En el TCP la usa cada sede; en el Regional ICPC, el equipo de sistemas de ICPC Latinoamérica.
+- **`.cstaff`:** tiene permisos más limitados y no permite marcar globos. En el Regional ICPC la usa el RCD para obtener las credenciales de los equipos.
 
-## Durante el TCP
+La consola de administración de MOJ se abre desde un enlace casi invisible en la esquina inferior derecha de la página de la competencia. En el Regional ICPC solo la usa el equipo de sistemas de ICPC Latinoamérica.
 
-**¿Qué marcador (scoreboard) se muestra durante el TCP?**
-- Solo el marcador oficial.
-- Una sede puede mostrar su propio marcador local solo si está en un espacio físicamente separado de la sala de competencia.
+**¿Cómo se verifica que los equipos pueden acceder a MOJ?**
+Con una cuenta de prueba, se inicia sesión en uno de los computadores y se envía una solución de práctica. Mientras se preparan los computadores, el firewall de la competencia queda abierto para hacer estas pruebas. En el TCP lo hace el contacto técnico de cada sede; en el Regional ICPC, el equipo de sistemas de ICPC Latinoamérica.
+
+## MOJ durante la competencia
+
+**¿Qué marcador (scoreboard) se muestra durante la competencia?**
+En el TCP y en el Regional ICPC:
+
+- Solo se muestra el marcador oficial.
+- Un marcador local solo puede mostrarse en un espacio físicamente separado de la sala de competencia.
 - El marcador se congela durante la última hora de competencia.
 
 # Durante la competencia
@@ -426,7 +434,7 @@ Si el Systems Group Manager avisa que no está recibiendo datos de las máquinas
 El canal de coordinación entre el staff técnico anfitrión, el Technical Group y el Systems Group Manager se define durante la preparación de la competencia.
 
 **¿Dónde se publican los avisos durante la competencia?**
-En el TCP, en el grupo de Telegram de asistencia técnica, al que se unen los contactos técnicos de cada sede. Ahí se avisan, por ejemplo, la apertura del firewall, el congelamiento del marcador y el bloqueo de las máquinas al final. Conviene tenerlo a la vista durante toda la competencia.
+En ambas competencias, en el grupo de Telegram de asistencia técnica; en el TCP se unen a él los contactos técnicos de cada sede. Ahí se avisan, por ejemplo, la apertura del firewall, el congelamiento del marcador y el bloqueo de las máquinas al final. Conviene tenerlo a la vista durante toda la competencia.
 
 ## Incidentes
 
@@ -516,6 +524,13 @@ Puedes ver al resto del equipo en la página [Equipo](/equipo/).
 Sí. Es parte del rol del Systems Group Manager dar apoyo y orientación durante todo el año, además de la preparación y la ejecución del TCP y el Regional ICPC, a cualquier persona o institución que quiera organizar competencias de programación, sin importar la plataforma que use ni su afiliación.
 
 Si estás organizando una competencia en tu institución, tu ciudad o tu comunidad, o quieres hacerlo, puedes contactarlo directamente.
+
+## Correcciones y sugerencias
+
+**¿Cómo aviso de un error o propongo una pregunta para esta FAQ?**
+Abre un [issue en el repositorio del sitio](https://github.com/idlechara/icpccl-home/issues/new/choose) contando qué falta o qué está mal y en qué pregunta. Sirve para dudas que la FAQ no responde, correcciones y pedidos de información nueva, del TCP o del Regional ICPC. Necesitas una cuenta de GitHub.
+
+Los issues son públicos: no incluyas credenciales, datos de tu sede que no deban publicarse ni datos personales. Para eso, escribe directamente al [Systems Group Manager](#a-quien-contacto-si-tengo-dudas-tecnicas).
 
 ## Wiki de MaratonaLinux
 

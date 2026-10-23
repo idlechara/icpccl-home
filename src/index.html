@@ -19,12 +19,13 @@ layout: base.liquid
         <span>Fechas</span>
         <strong>{{ hero.dates }}</strong>
       </div>
-      {% if hero.place != blank %}
+      {%- comment %} With a venue logo, the logo (next to the countdown) already says where {%- endcomment %}
+      {% if hero.place != blank %}{% if hero.placeLogo == blank %}
       <div>
         <span>Lugar</span>
         <strong class="hero__place">{{ hero.place }}</strong>
       </div>
-      {% endif %}
+      {% endif %}{% endif %}
     </div>
   </div>
   <div class="hero__card">
@@ -87,19 +88,19 @@ layout: base.liquid
       <p>Equipos, coaches, reglas, cómo ser sede y el ambiente técnico.</p>
     </a>
     <a class="panel card-link" href="/equipo/">
-      <h3>Equipo 2026</h3>
+      <h3>Equipo {{ team.year }}</h3>
       <p>Las personas detrás de las competencias de este año.</p>
     </a>
   </div>
-  {% include "sponsors.liquid", sponsorRows: sponsors.rows %}
+  {% include "sponsors.liquid", sponsorRows: contests.currentSponsorRows %}
   {% if contests.past.size > 0 %}
   <h2 class="block__subtitle">Competencias anteriores</h2>
   <div class="grid">
     {% for contest in contests.past %}
     <div class="panel past-contest">
-      {%- comment %} Title links to the competition page, which shows the latest edition {%- endcomment %}
+      {%- comment %} Title links to the edition's own page {%- endcomment %}
       <span class="card-link__kind">{{ contest.kindLabel }}</span>
-      <h3><a href="{{ contest.pageUrl }}#{{ contest.slug }}">{{ contest.name }}</a></h3>
+      <h3><a href="{{ contest.editionUrl }}">{{ contest.name }}</a></h3>
       <p>{{ contest.dates }}{% if contest.place != blank %} · {{ contest.place }}{% endif %}</p>
       <p class="past-contest__status">Finalizada</p>
       {% if contest.results.size > 0 %}

@@ -24,11 +24,11 @@ The deploy workflow publishes the image to `ghcr.io/idlechara/icpccl-home`, tagg
 
 | Path | What it holds |
 |---|---|
-| `src/` | Eleventy input. Pages: `index.html` (home), `icpc.html`, `tcp.html`, `faq.html`, `faq-tecnica.html`, `equipo.html`, `bonus.html` (hidden page), `robots.liquid`. |
-| `src/_includes/` | `base.liquid` (all CSS, nav, footer, shared scripts), `contest-section.liquid`, `faq-list.liquid`, `sponsors.liquid`. |
+| `src/` | Eleventy input. Pages: `index.html` (home), `icpc.html`, `tcp.html`, `edicion.html` (one page per edition), `faq.html`, `faq-tecnica.html`, `equipo.html`, `bonus.html` (hidden page), `robots.liquid`. |
+| `src/_includes/` | `base.liquid` (all CSS, nav, footer, shared scripts), `contest-section.liquid`, `edition-archive.liquid`, `faq-list.liquid`, `sponsors.liquid`. |
 | `src/_data/` | Data files: `contests.js`, `faq.js`, `faqTecnica.js`, `team.js`, `sponsors.js`, `site.js`, `bonus.js`. |
-| `lib/` | Shared helpers: `content.js` (markdown, FAQ parsing, slugs), `bonus.js` (hidden page hashing). |
-| `contests/` | One contest per markdown file. Field reference in `contests/README.md`; template in `_plantilla.md`. |
+| `lib/` | Shared helpers: `content.js` (markdown, FAQ parsing, slugs), `editions.js` (edition folders, kinds), `sponsors.js` (per-edition sponsors), `bonus.js` (hidden page hashing). |
+| `ediciones/` | One folder per contest edition (`YYYY_MM_kind`), with `competencia.md` and its files. Field reference in `ediciones/README.md`; template in `_plantilla.md`. |
 | `faq-tcp-icpc.md`, `faq-tecnico.md` | General FAQ and technical FAQ for host sites. |
 | `scripts/` | `deploy.sh` (build and sync to R2), `nueva-competencia.mjs` (contest assistant). |
 | `bonus/` | Hidden page photo and text. Not in git (see below). |
@@ -37,9 +37,13 @@ The deploy workflow publishes the image to `ghcr.io/idlechara/icpccl-home`, tagg
 
 ## Content model
 
-### Contests (`contests/*.md`)
+### Editions (`ediciones/YYYY_MM_kind/`)
 
-Front matter holds the structured data; the body is the description, optionally followed by FAQ questions for that edition. `kind: regional` renders on `/icpc/`, `kind: tcp` on `/tcp/`. Files starting with `_` are ignored, and the build fails if a template value like `__NOMBRE__` is left unfilled.
+Everything that belongs to one contest instance lives in its folder: `competencia.md` (front matter with the structured data; the body is the description, optionally followed by FAQ questions for that edition), its sponsors (front matter), and its files (PDFs, venue and sponsor logos).
+
+- The folder name sets the year, month and kind (`tcp` or `icpc`); the build fails if it doesn't match `start`, or if two folders would share a page. Folders starting with `_` are ignored, and the build fails if a template value like `__NOMBRE__` is left unfilled.
+- Each edition has a permanent page at `/<kind>/<year>/` (`src/edicion.html`). The folder's files are published there, and relative URLs in `competencia.md` (`url: mapa.pdf`) resolve to it. A new folder needs a restart of `npm start` to publish its files.
+- `contests.currentYear` (the next contest's year or, between seasons, the latest one) is the season shown on `/equipo/` and the homepage.
 
 - The homepage features the next contest that hasn't ended (by `start`); "upcoming" and "past" are decided at build time, so a rebuild is needed after a contest ends.
 - A competition page shows its upcoming edition or, if there's none, the most recent one, marked as finished with its `results` links.
@@ -66,8 +70,10 @@ Answer markdown    (until the next question or heading)
 
 ### Team and sponsors
 
-- `src/_data/team.js`: `row` sets the line each person appears on. Roles are strings or `{ title, in: ["tcp", "icpc"] }`, which adds competition badges and drives the TCP/ICPC filter. `hidden: true` keeps a person or a role off the page. Tooltips are off (`SHOW_TOOLTIPS`). Photos go in `src/img/equipo/`, named after the `id` or set with `photo`.
-- `src/_data/sponsors.js`: `row`, optional `url`, `in` per competition, logos in `src/img/sponsors/`. The section only shows on the dev server until `PUBLIC = true`.
+- `src/_data/team.js` is the single list of everyone who has been part of ICPC Chile. Roles are `{ title, in: ["tcp", "icpc"], years: [2025, 2026] }`; `years` is required, and without `in` a role applies to both. When someone changes role, add the new one with its years and keep the old one.
+- From that list, `/equipo/` shows the current season's team (cards, `row` sets the line, TCP/ICPC filter) and, once there's more than one year, "Quienes han sido parte de ICPC Chile" with every role and its years.
+- `hidden: true` keeps a person or a role off the site. Tooltips are off (`SHOW_TOOLTIPS`). Photos go in `src/img/equipo/`, named after the `id` or set with `photo`.
+- Sponsors are per edition (`sponsors` in `competencia.md`, logos in the edition folder). The homepage shows those of the upcoming editions. They only show on the dev server until `PUBLIC = true` in `src/_data/sponsors.js`.
 
 ## Environments
 

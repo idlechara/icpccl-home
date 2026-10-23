@@ -17,8 +17,4 @@ description: "El Torneo Chileno de Programación (TCP) es una competencia amisto
 <p class="block__lead">Pronto anunciaremos la próxima edición del TCP. Mientras tanto, revisa las <a href="/faq/">preguntas frecuentes</a>.</p>
 {% endfor %}
 
-{% unless site.dev == false and sponsors.public == false %}{% if sponsors.byCompetition.tcp.size > 0 %}
-<section class="block">
-{% include "sponsors.liquid", sponsorRows: sponsors.byCompetition.tcp %}
-</section>
-{% endif %}{% endunless %}
+{% include "edition-archive.liquid", editions: contests.archiveByKind.tcp %}

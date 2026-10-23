@@ -12,10 +12,10 @@ npm start        # http://localhost:8080
 
 ## Common edits
 
-- **Contest dates, registration, schedule:** `contests/<tipo>-<año>.md`. To add a new one, run `npm run nueva-competencia`.
+- **Contest dates, registration, schedule:** `ediciones/<año>_<mes>_<tipo>/competencia.md` (e.g. `ediciones/2026_11_icpc/`), with that edition's PDFs and logos in the same folder. To add a new one, run `npm run nueva-competencia`.
 - **FAQ:** `faq-tcp-icpc.md` (general) and `faq-tecnico.md` (for host sites).
-- **Team page:** `src/_data/team.js`, with photos in `src/img/equipo/`.
-- **Sponsors:** `src/_data/sponsors.js`. They only show on `npm start` until you set `PUBLIC = true`.
+- **Team:** `src/_data/team.js`, with photos in `src/img/equipo/`. Each role lists the years it was held.
+- **Sponsors:** in each edition's `competencia.md`. They only show on `npm start` until you set `PUBLIC = true` in `src/_data/sponsors.js`.
 
 ## Publish
 

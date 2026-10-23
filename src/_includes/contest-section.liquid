@@ -1,6 +1,6 @@
-{%- comment -%} One contest (see contests/README.md). Expects `contest`. {%- endcomment -%}
+{%- comment -%} One contest edition (see ediciones/README.md). Expects `contest`; `heading: false` leaves out the title (the edition page already has it in its header). {%- endcomment -%}
 <section id="{{ contest.slug }}" class="block">
-  <h2>{{ contest.name }}</h2>
+  {% unless heading == false %}<h2>{{ contest.name }}</h2>{% endunless %}
   <p class="contest-meta">
     <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7Zm12 8v10H5V10h14Z"/></svg>{{ contest.dates }}</span>
     {% if contest.place != blank %}<span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7Zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z"/></svg>{% if contest.mapUrl != blank %}<a href="{{ contest.mapUrl }}" target="_blank" rel="noreferrer">{{ contest.place }}</a>{% else %}{{ contest.place }}{% endif %}</span>{% endif %}
@@ -78,4 +78,6 @@
     <a class="btn ghost" href="/faq/#{{ contest.faqId }}">Preguntas frecuentes</a>
     {% endif %}
   </div>
+
+  {% include "sponsors.liquid", sponsorRows: contest.sponsorRows %}
 </section>

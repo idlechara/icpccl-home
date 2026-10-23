@@ -1,5 +1,5 @@
 // Main FAQ (/faq/): general questions from faq-tcp-icpc.md (repo root) plus the
-// questions in each upcoming contest file (contests/*.md). Format: see lib/content.js.
+// questions of each upcoming edition (ediciones/*/competencia.md). Format: see lib/content.js.
 
 import { readFileSync } from "node:fs";
 import { parseFaqFile, buildFaq } from "../../lib/content.js";

@@ -1,63 +1,64 @@
-// Loads one contest per markdown file in contests/ (repo root). The front matter holds
-// the structured data (see contests/README.md); the body is the description, optionally
-// followed by FAQ questions for that edition (same **Pregunta** format as the main FAQ).
+// Loads one contest edition per folder in ediciones/ (repo root, see lib/editions.js).
+// The front matter of its competencia.md holds the structured data (see
+// ediciones/README.md); the body is the description, optionally followed by FAQ
+// questions for that edition (same **Pregunta** format as the main FAQ).
 //
-// "Upcoming" is decided at build time: a contest disappears from the page on the first
-// build after its `end`.
+// "Upcoming" is decided at build time: a contest stops being upcoming on the first
+// build after its `end`. Every edition also gets its own permanent page, /<kind>/<year>/.
 
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import matter from "gray-matter";
 import { md, isQuestion, parseQuestions } from "../../lib/content.js";
+import { CONTEST_FILE, KINDS, listEditionDirs } from "../../lib/editions.js";
+import { loadSponsors, toRows } from "../../lib/sponsors.js";
 import loadSite from "./site.js";
 
-const CONTESTS_DIR = "contests";
 const TIME_ZONE = "America/Santiago";
 const REGISTRATION_STATUSES = ["open", "soon", "closed"];
-// Each kind of contest has its own page
-const KINDS = {
-  regional: { label: "ICPC South America/South Finals", pageUrl: "/icpc/" },
-  tcp: { label: "Torneo Chileno de Programación", pageUrl: "/tcp/" },
-};
 const DEFAULT_DURATION_MS = 5 * 60 * 60 * 1000;
 
 const dayFormat = new Intl.DateTimeFormat("es-CL", { weekday: "long", day: "numeric", month: "long", timeZone: TIME_ZONE });
 const timeFormat = new Intl.DateTimeFormat("es-CL", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: TIME_ZONE });
+const yearMonthFormat = new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", timeZone: TIME_ZONE });
 
-function toDate(value, file, field) {
+function toDate(value, dir, field) {
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) {
-    throw new Error(`[contests] ${file}: "${field}" no es una fecha válida (usa por ejemplo 2026-11-07T14:00:00-03:00)`);
+    throw new Error(`[ediciones] ${dir}: "${field}" no es una fecha válida (usa por ejemplo 2026-11-07T14:00:00-03:00)`);
   }
   return date;
 }
 
-// Venue logo: a file in src/img/sedes/, named in the contest's `placeLogo`
-const PLACE_LOGO_DIR = "img/sedes";
-function findPlaceLogo(name, file) {
-  if (!name) return "";
-  if (!existsSync(`src/${PLACE_LOGO_DIR}/${name}`)) {
-    console.warn(`[contests] ${file}: no existe src/${PLACE_LOGO_DIR}/${name} (placeLogo)`);
-    return "";
-  }
-  return `/${PLACE_LOGO_DIR}/${name}`;
+// A relative URL ("mapa.pdf") points to a file in the edition folder, published at
+// /<kind>/<year>/mapa.pdf. Absolute paths, full URLs and anchors are left as they are.
+function resolveUrl(url, edition) {
+  if (!url || /^([a-z][a-z0-9+.-]*:|\/|#)/i.test(url)) return url;
+  if (!existsSync(`${edition.path}/${url}`)) console.warn(`[ediciones] ${edition.dir}: no existe el archivo ${url}`);
+  return `${edition.url}${url}`;
 }
 
-function loadContest(file) {
-  const raw = readFileSync(`${CONTESTS_DIR}/${file}`, "utf8");
+function loadContest(edition) {
+  const { dir } = edition;
+  const file = `${edition.path}/${CONTEST_FILE}`;
+  if (!existsSync(file)) throw new Error(`[ediciones] ${dir}: falta ${CONTEST_FILE}`);
+  const raw = readFileSync(file, "utf8");
   // Unfilled template values (comments don't count)
   const uncommented = raw.replace(/<!--[\s\S]*?-->/g, "").replace(/(^|\s)#.*$/gm, "");
   const pending = [...new Set(uncommented.match(/__[A-ZÁÉÍÓÚÑ_]+__/g) ?? [])];
   if (pending.length) {
-    throw new Error(`[contests] ${file}: faltan valores por completar de la plantilla: ${pending.join(", ")}`);
+    throw new Error(`[ediciones] ${dir}: faltan valores por completar de la plantilla: ${pending.join(", ")}`);
   }
   const { data, content } = matter(raw);
-  const slug = data.id ?? file.replace(/\.md$/, "");
+  const kind = KINDS[edition.kind];
 
-  if (!data.name) throw new Error(`[contests] ${file}: falta "name"`);
-  const kind = KINDS[data.kind];
-  if (!kind) throw new Error(`[contests] ${file}: "kind" debe ser ${Object.keys(KINDS).join(" o ")}`);
-  const start = toDate(data.start, file, "start");
-  const end = data.end ? toDate(data.end, file, "end") : new Date(start.getTime() + DEFAULT_DURATION_MS);
+  if (!data.name) throw new Error(`[ediciones] ${dir}: falta "name"`);
+  const start = toDate(data.start, dir, "start");
+  const end = data.end ? toDate(data.end, dir, "end") : new Date(start.getTime() + DEFAULT_DURATION_MS);
+  // The folder name must match the date, so a copied folder can't keep last year's name
+  const [startYear, startMonth] = yearMonthFormat.format(start).split("-").map(Number);
+  if (startYear !== edition.year || startMonth !== edition.month) {
+    throw new Error(`[ediciones] ${dir}: la carpeta no coincide con "start" (${startYear}-${String(startMonth).padStart(2, "0")})`);
+  }
 
   // registration.dev overrides the registration on the dev server only
   // (e.g. a placeholder link to preview how the page looks with registration open)
@@ -65,12 +66,12 @@ function loadContest(file) {
   const registration = { ...baseRegistration, ...(loadSite().dev && devRegistration) };
   registration.status ??= registration.url ? "open" : "soon";
   if (!REGISTRATION_STATUSES.includes(registration.status)) {
-    throw new Error(`[contests] ${file}: registration.status debe ser ${REGISTRATION_STATUSES.join(", ")}`);
+    throw new Error(`[ediciones] ${dir}: registration.status debe ser ${REGISTRATION_STATUSES.join(", ")}`);
   }
   // The note accepts inline markdown (e.g. a link to the payment details)
   if (registration.note) registration.note = md.renderInline(String(registration.note));
   if (registration.status === "open" && !registration.url) {
-    throw new Error(`[contests] ${file}: la inscripción está abierta pero falta registration.url`);
+    throw new Error(`[ediciones] ${dir}: la inscripción está abierta pero falta registration.url`);
   }
 
   // Body: description up to the first question, FAQ questions after it
@@ -80,21 +81,25 @@ function loadContest(file) {
   const questions = firstQuestion === -1 ? [] : parseQuestions(lines.slice(firstQuestion));
 
   const startDay = dayFormat.format(start).replace(",", "");
+  const slug = `${edition.kind}-${edition.year}`;
+  const sponsors = loadSponsors(data.sponsors, edition);
 
   return {
     slug,
-    file,
+    dir,
+    year: edition.year,
     name: data.name,
-    kind: data.kind,
+    kind: edition.kind,
     kindLabel: kind.label,
-    pageUrl: kind.pageUrl,
-    navLabel: data.navLabel ?? data.name,
+    kindName: kind.name,
+    pageUrl: `/${edition.kind}/`,
+    editionUrl: edition.url,
     eyebrow: data.eyebrow ?? "ICPC Chile",
     summary: data.summary ?? "",
     place: data.place ?? "",
     mapUrl: data.mapUrl ?? "",
-    placeLogo: findPlaceLogo(data.placeLogo, file),
-    // White logos go bare on the dark hero and are darkened on light backgrounds
+    placeLogo: resolveUrl(data.placeLogo, edition) ?? "",
+    // White logos go bare on the dark hero; others get a white background
     placeLogoWhite: data.placeLogoWhite === true,
     start,
     end,
@@ -109,8 +114,10 @@ function loadContest(file) {
       items: (day.items ?? []).map(([time, text, flag]) => ({ time, html: md.renderInline(text ?? ""), main: flag === "main" })),
     })),
     sites: data.sites ?? [],
-    links: data.links ?? [],
-    results: data.results ?? [],
+    links: (data.links ?? []).map((link) => ({ ...link, url: resolveUrl(link.url, edition) })),
+    results: (data.results ?? []).map((link) => ({ ...link, url: resolveUrl(link.url, edition) })),
+    sponsors,
+    sponsorRows: toRows(sponsors),
     descriptionHtml: md.render(descriptionLines.join("\n").trim()),
     faqTitle: data.faqTitle ?? data.name,
     faqId: `faq-${slug}`,
@@ -120,21 +127,32 @@ function loadContest(file) {
 
 export default function () {
   const now = new Date();
-  const all = readdirSync(CONTESTS_DIR)
-    // README.md and files starting with "_" (such as _plantilla.md) are not contests
-    .filter((file) => file.endsWith(".md") && file !== "README.md" && !file.startsWith("_"))
-    .map(loadContest)
-    .sort((a, b) => a.start - b.start);
-  for (const contest of all) contest.finished = contest.end < now;
+  const all = listEditionDirs().map(loadContest).sort((a, b) => a.start - b.start);
+  const urls = new Map();
+  for (const contest of all) {
+    if (urls.has(contest.editionUrl)) {
+      throw new Error(`[ediciones] ${urls.get(contest.editionUrl)} y ${contest.dir} tendrían la misma página (${contest.editionUrl})`);
+    }
+    urls.set(contest.editionUrl, contest.dir);
+    contest.finished = contest.end < now;
+  }
   const upcoming = all.filter((contest) => !contest.finished);
   const past = all.filter((contest) => contest.finished).reverse();
-  // Each kind's page shows its upcoming editions or, if there are none, the most recent one
-  const byKind = Object.fromEntries(
-    Object.keys(KINDS).map((kind) => {
-      const next = upcoming.filter((c) => c.kind === kind);
-      const last = past.find((c) => c.kind === kind);
-      return [kind, next.length ? next : last ? [last] : []];
-    }),
-  );
-  return { all, upcoming, past, byKind, next: upcoming[0] ?? null };
+  // Each kind's page shows its upcoming editions or, if there are none, the most recent
+  // one; its other past editions are listed below it
+  const byKind = {};
+  const archiveByKind = {};
+  for (const kind of Object.keys(KINDS)) {
+    const next = upcoming.filter((c) => c.kind === kind);
+    const last = past.find((c) => c.kind === kind);
+    byKind[kind] = next.length ? next : last ? [last] : [];
+    archiveByKind[kind] = past.filter((c) => c.kind === kind && !byKind[kind].includes(c));
+  }
+  const next = upcoming[0] ?? null;
+  // The current season: the year of the next contest or, between seasons, the latest one
+  const currentYear = (next ?? past[0])?.year ?? now.getFullYear();
+  // Homepage sponsors: those of the upcoming editions, once each
+  const seen = new Set();
+  const currentSponsors = upcoming.flatMap((c) => c.sponsors).filter((s) => !seen.has(s.id ?? s.name) && seen.add(s.id ?? s.name));
+  return { all, upcoming, past, byKind, archiveByKind, next, currentYear, currentSponsorRows: toRows(currentSponsors) };
 }
