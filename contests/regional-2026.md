@@ -12,7 +12,7 @@ dates: 6 y 7 de noviembre de 2026
 start: 2026-11-07T14:00:00-03:00
 end: 2026-11-07T23:59:00-03:00
 registration:
-  status: open
+  status: closed
   url: https://icpc.global/regionals/finder/SouthAmerica-South-2027
   deadline: 20 de octubre
   note: El pago es por transferencia. [Ver datos de pago](/faq/#como-se-paga-la-inscripcion-al-regional-icpc)
