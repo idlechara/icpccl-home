@@ -31,15 +31,20 @@ facts:
 agenda:
   - title: Viernes 6 de noviembre
     items:
-      - ["15:00", "Registro, entrega de materiales y ceremonia de bienvenida"]
+      - ["15:45", "Registro, entrega de materiales"]
+      - ["16:00", "Ceremonia de apertura"]
+      - ["17:30", "Traslado a zona de competencia"]
       - ["18:00", "Warmup"]
+      - ["19:00", "Término de warmup"]
   - title: Sábado 7 de noviembre
     items:
       - ["10:00", "Llegada de equipos y coaches"]
-      - ["11:00", "Fotos oficiales"]
-      - ["12:30", "Colación"]
-      - ["14:00 – 19:00", "Competencia", main]
-      - ["20:00", "Cena y premiación"]
+      - ["10:30", "Fotos oficiales, por equipo"]
+      - ["12:30", "Foto grupal"]
+      - ["12:30", "Colaciones"]
+      - ["14:00 – 19:00", "ICPC Latin America Programming Contest", main]
+      - ["19:00", "Traslado a lugar de premiación"]
+      - ["20:00", "Ceremonia de premiación"]
 links:
   - label: Reglas (PDF)
     url: reglas-2026-2027.pdf
